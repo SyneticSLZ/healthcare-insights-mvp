@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Regulatory & Financial Filings Tracker</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            primary: {
+              50: '#e6f1fe',
+              100: '#cce3fd',
+              500: '#3b82f6',
+              600: '#2563eb',
+              700: '#1d4ed8',
+              800: '#1e40af',
+              900: '#1e3a8a'
+            },
+            secondary: {
+              100: '#d1fae5',
+              500: '#10b981',
+              700: '#047857'
+            },
+            dark: {
+              800: '#1e293b',
+              900: '#0f172a'
+            }
+          },
+          animation: {
+            'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+          }
+        }
+      }
+    }
+  </script>
+  <style type="text/tailwindcss">
+    @layer utilities {
+      .glass {
+        @apply bg-white/10 backdrop-blur-md border border-white/20 shadow-xl;
+      }
+      
+      .glass-light {
+        @apply bg-white/80 backdrop-blur-md border border-gray-200 shadow-xl;
+      }
+
+      .card-hover {
+        @apply transition-all duration-300 hover:shadow-lg hover:-translate-y-1;
+      }
+    }
+  </style>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="min-h-screen bg-gradient-to-br from-slate-50 to-slate-200 dark:from-dark-900 dark:to-dark-800 text-gray-800 dark:text-gray-100">
+  <div class="absolute top-0 left-0 w-full h-32 bg-primary-600 dark:bg-primary-900 transform -skew-y-2 origin-top-left -translate-y-10 z-0"></div>
+
+  <header class="relative z-10 pt-6">
+    <nav class="container mx-auto px-4 py-4 flex justify-between items-center">
+      <div class="flex items-center space-x-2">
+        <div class="bg-white dark:bg-primary-700 p-2 rounded-lg shadow-md">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-primary-700 dark:text-white" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M6 2a2 2 0 00-2 2v12a2 2 0 002 2h8a2 2 0 002-2V4a2 2 0 00-2-2H6zm1 2a1 1 0 000 2h6a1 1 0 100-2H7zm6 7a1 1 0 011 1v3a1 1 0 11-2 0v-3a1 1 0 011-1zm-3 3a1 1 0 100 2h.01a1 1 0 100-2H10zm-4 1a1 1 0 011-1h.01a1 1 0 110 2H7a1 1 0 01-1-1zm1-4a1 1 0 100 2h.01a1 1 0 100-2H7zm2 0a1 1 0 011-1h.01a1 1 0 110 2H10a1 1 0 01-1-1zm4-4a1 1 0 100 2h.01a1 1 0 100-2H13zM9 9a1 1 0 011-1h.01a1 1 0 110 2H10a1 1 0 01-1-1zM7 8a1 1 0 000 2h.01a1 1 0 000-2H7z" clip-rule="evenodd" />
+          </svg>
+        </div>
+        <h1 class="text-2xl font-bold">HealthMarket Intelligence</h1>
+      </div>
+      <div class="flex items-center space-x-4">
+        <a href="index.html" class="font-semibold text-primary-700 dark:text-primary-100 border-b-2 border-primary-600 dark:border-primary-500 px-1">Regulatory Tracking</a>
+        <a href="pbm_relationships.html" class="text-gray-600 dark:text-gray-300 hover:text-primary-700 dark:hover:text-primary-300 transition-colors px-1">PBM Relationships</a>
+        <a href="market_share.html" class="text-gray-600 dark:text-gray-300 hover:text-primary-700 dark:hover:text-primary-300 transition-colors px-1">Market Analysis</a>
+        <button id="toggleDarkMode" class="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">
+          <i class="fas fa-moon dark:hidden"></i>
+          <i class="fas fa-sun hidden dark:block"></i>
+        </button>
+      </div>
+    </nav>
+  </header>
+  
+  <main class="container mx-auto px-4 py-8 relative z-10">
+    <div class="flex justify-between items-center mb-8">
+      <h2 class="text-3xl font-bold text-gray-800 dark:text-white">Regulatory & Financial Filings</h2>
+      <div class="flex items-center space-x-2 text-sm">
+        <span class="text-gray-500 dark:text-gray-400">Last updated:</span>
+        <span id="updateTimestamp" class="font-medium">Loading...</span>
+      </div>
+    </div>
+    
+    <!-- Overview Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
+      <div class="glass dark:glass p-6 rounded-xl card-hover">
+        <div class="flex items-start justify-between">
+          <div>
+            <p class="text-gray-500 dark:text-gray-400 text-sm font-medium">Total Premiums</p>
+            <h3 id="totalPremiums" class="text-3xl font-bold mt-1">$1.77T</h3>
+          </div>
+          <div class="bg-blue-100 dark:bg-blue-900/60 p-3 rounded-lg">
+            <i class="fas fa-chart-line text-blue-600 dark:text-blue-300"></i>
+          </div>
+        </div>
+        <div class="mt-3 text-sm">
+          <span id="premiumsChange" class="font-medium text-green-600 dark:text-green-400">+10.3% </span>
+          <span class="text-gray-600 dark:text-gray-400">year over year</span>
+        </div>
+      </div>
+      
+      <div class="glass dark:glass p-6 rounded-xl card-hover">
+        <div class="flex items-start justify-between">
+          <div>
+            <p class="text-gray-500 dark:text-gray-400 text-sm font-medium">Net Income</p>
+            <h3 id="netIncome" class="text-3xl font-bold mt-1">$132.5B</h3>
+          </div>
+          <div class="bg-green-100 dark:bg-green-900/60 p-3 rounded-lg">
+            <i class="fas fa-dollar-sign text-green-600 dark:text-green-300"></i>
+          </div>
+        </div>
+        <div class="mt-3 text-sm">
+          <span id="incomeChange" class="font-medium text-green-600 dark:text-green-400">+125.7% </span>
+          <span class="text-gray-600 dark:text-gray-400">from previous period</span>
+        </div>
+      </div>
+      
+      <div class="glass dark:glass p-6 rounded-xl card-hover">
+        <div class="flex items-start justify-between">
+          <div>
+            <p class="text-gray-500 dark:text-gray-400 text-sm font-medium">Regulatory Filings</p>
+            <h3 id="filingCount" class="text-3xl font-bold mt-1">217</h3>
+          </div>
+          <div class="bg-purple-100 dark:bg-purple-900/60 p-3 rounded-lg">
+            <i class="fas fa-file-alt text-purple-600 dark:text-purple-300"></i>
+          </div>
+        </div>
+        <div class="mt-3 text-sm">
+          <span id="filingsChange" class="font-medium text-purple-600 dark:text-purple-400">+32 </span>
+          <span class="text-gray-600 dark:text-gray-400">in last 30 days</span>
+        </div>
+      </div>
+      
+      <div class="glass dark:glass p-6 rounded-xl card-hover">
+        <div class="flex items-start justify-between">
+          <div>
+            <p class="text-gray-500 dark:text-gray-400 text-sm font-medium">Combined Ratio</p>
+            <h3 id="combinedRatio" class="text-3xl font-bold mt-1">97.5%</h3>
+          </div>
+          <div class="bg-amber-100 dark:bg-amber-900/60 p-3 rounded-lg">
+            <i class="fas fa-balance-scale text-amber-600 dark:text-amber-300"></i>
+          </div>
+        </div>
+        <div class="mt-3 text-sm">
+          <span id="ratioChange" class="font-medium text-green-600 dark:text-green-400">-6.7pts </span>
+          <span class="text-gray-600 dark:text-gray-400">year over year</span>
+        </div>
+      </div>
+    </div>
+    
+    <!-- NAIC Financial Summary -->
+    <div class="glass dark:glass rounded-xl p-6 mb-10">
+      <div class="flex justify-between items-start mb-6">
+        <h3 class="text-xl font-semibold">Insurance Industry Financial Snapshot</h3>
+        <div class="bg-gray-100 dark:bg-gray-800 px-3 py-1 rounded-full text-xs text-gray-700 dark:text-gray-300">
+          Source: NAIC Industry Snapshots, June 30, 2024
+        </div>
+      </div>
+      
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <!-- Property & Casualty Card -->
+        <div class="bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/30 dark:to-blue-800/30 rounded-lg p-5 border border-blue-200 dark:border-blue-800">
+          <div class="flex items-center mb-4">
+            <div class="bg-blue-200 dark:bg-blue-800 p-2 rounded-lg mr-3">
+              <i class="fas fa-home text-blue-700 dark:text-blue-200"></i>
+            </div>
+            <h4 class="font-semibold text-blue-800 dark:text-blue-200">Property & Casualty</h4>
+          </div>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center border-b border-blue-200 dark:border-blue-800 pb-2">
+              <span class="text-gray-600 dark:text-gray-400 text-sm">Net Premiums Written</span>
+              <span id="pc-premiums" class="font-medium">$468.3B</span>
+            </div>
+            <div class="flex justify-between items-center border-b border-blue-200 dark:border-blue-800 pb-2">
+              <span class="text-gray-600 dark:text-gray-400 text-sm">Net Income</span>
+              <span id="pc-income" class="font-medium">$99.1B</span>
+            </div>
+            <div class="flex justify-between items-center border-b border-blue-200 dark:border-blue-800 pb-2">
+              <span class="text-gray-600 dark:text-gray-400 text-sm">Loss Ratio</span>
+              <span id="pc-lossratio" class="font-medium">72.3%</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400 text-sm">Combined Ratio</span>
+              <span id="pc-combinedratio" class="font-medium">97.5%</span>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Health Entities Card -->
+        <div class="bg-gradient-to-br from-green-50 to-green-100 dark:from-green-900/30 dark:to-green-800/30 rounded-lg p-5 border border-green-200 dark:border-green-800">
+          <div class="flex items-center mb-4">
+            <div class="bg-green-200 dark:bg-green-800 p-2 rounded-lg mr-3">
+              <i class="fas fa-heartbeat text-green-700 dark:text-green-200"></i>
+            </div>
+            <h4 class="font-semibold text-green-800 dark:text-green-200">Health Entities</h4>
+          </div>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center border-b border-green-200 dark:border-green-800 pb-2">
+              <span class="text-gray-600 dark:text-gray-400 text-sm">Direct Written Premium</span>
+              <span id="he-premium" class="font-medium">$590.0B</span>
+            </div>
+            <div class="flex justify-between items-center border-b border-green-200 dark:border-green-800 pb-2">
+              <span class="text-gray-600 dark:text-gray-400 text-sm">Net Income</span>
+              <span id="he-income" class="font-medium">$15.8B</span>
+            </div>
+            <div class="flex justify-between items-center border-b border-green-200 dark:border-green-800 pb-2">
+              <span class="text-gray-600 dark:text-gray-400 text-sm">Loss Ratio</span>
+              <span id="he-lossratio" class="font-medium">87.1%</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400 text-sm">Combined Ratio</span>
+              <span id="he-combinedratio" class="font-medium">97.9%</span>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Life & Health Card -->
+        <div class="bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-900/30 dark:to-purple-800/30 rounded-lg p-5 border border-purple-200 dark:border-purple-800">
+          <div class="flex items-center mb-4">
+            <div class="bg-purple-200 dark:bg-purple-800 p-2 rounded-lg mr-3">
+              <i class="fas fa-user-shield text-purple-700 dark:text-purple-200"></i>
+            </div>
+            <h4 class="font-semibold text-purple-800 dark:text-purple-200">Life, A&H, Fraternal</h4>
+          </div>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center border-b border-purple-200 dark:border-purple-800 pb-2">
+              <span class="text-gray-600 dark:text-gray-400 text-sm">Premium & Deposits</span>
+              <span id="life-premium" class="font-medium">$700.4B</span>
+            </div>
+            <div class="flex justify-between items-center border-b border-purple-200 dark:border-purple-800 pb-2">
+              <span class="text-gray-600 dark:text-gray-400 text-sm">Net Income</span>
+              <span id="life-income" class="font-medium">$17.6B</span>
+            </div>
+            <div class="flex justify-between items-center border-b border-purple-200 dark:border-purple-800 pb-2">
+              <span class="text-gray-600 dark:text-gray-400 text-sm">Annuities</span>
+              <span id="life-annuities" class="font-medium">$258.4B</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400 text-sm">ROA</span>
+              <span id="life-roa" class="font-medium">0.4%</span>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Title Industry Card -->
+        <div class="bg-gradient-to-br from-amber-50 to-amber-100 dark:from-amber-900/30 dark:to-amber-800/30 rounded-lg p-5 border border-amber-200 dark:border-amber-800">
+          <div class="flex items-center mb-4">
+            <div class="bg-amber-200 dark:bg-amber-800 p-2 rounded-lg mr-3">
+              <i class="fas fa-file-signature text-amber-700 dark:text-amber-200"></i>
+            </div>
+            <h4 class="font-semibold text-amber-800 dark:text-amber-200">Title Industry</h4>
+          </div>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center border-b border-amber-200 dark:border-amber-800 pb-2">
+              <span class="text-gray-600 dark:text-gray-400 text-sm">Direct Written Premium</span>
+              <span id="title-premium" class="font-medium">$7.5B</span>
+            </div>
+            <div class="flex justify-between items-center border-b border-amber-200 dark:border-amber-800 pb-2">
+              <span class="text-gray-600 dark:text-gray-400 text-sm">Net Income</span>
+              <span id="title-income" class="font-medium">$524M</span>
+            </div>
+            <div class="flex justify-between items-center border-b border-amber-200 dark:border-amber-800 pb-2">
+              <span class="text-gray-600 dark:text-gray-400 text-sm">Loss Ratio</span>
+              <span id="title-lossratio" class="font-medium">5.0%</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600 dark:text-gray-400 text-sm">Combined Ratio</span>
+              <span id="title-combinedratio" class="font-medium">104.1%</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Recent Filings Section -->
+    <div class="glass dark:glass rounded-xl p-6 mb-10">
+      <div class="flex justify-between items-center mb-6">
+        <h3 class="text-xl font-semibold">Recent Regulatory Filings</h3>
+        <div class="flex space-x-4">
+          <select id="filingType" class="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg px-3 py-1.5 text-sm">
+            <option value="all">All Filings</option>
+            <option value="sec">SEC Filings</option>
+            <option value="state">State Insurance</option>
+            <option value="fda">FDA/Drug</option>
+          </select>
+          <button class="bg-primary-600 hover:bg-primary-700 text-white px-4 py-1.5 rounded-lg text-sm">
+            <i class="fas fa-filter mr-1"></i> Filter
+          </button>
+        </div>
+      </div>
+      <div class="overflow-x-auto">
+        <table class="w-full" id="filings-table">
+          <thead class="bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300">
+            <tr>
+              <th class="px-4 py-3 text-left rounded-tl-lg">Company</th>
+              <th class="px-4 py-3 text-left">Filing Type</th>
+              <th class="px-4 py-3 text-left">Date</th>
+              <th class="px-4 py-3 text-left rounded-tr-lg">Key Details</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-gray-200 dark:divide-gray-700" id="filings-body">
+            <tr class="hover:bg-gray-50 dark:hover:bg-gray-800/50">
+              <td class="px-4 py-3 font-medium">UnitedHealth Group</td>
+              <td class="px-4 py-3">
+                <span class="bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 text-xs font-medium px-2.5 py-0.5 rounded-full">SEC Form 10-Q</span>
+              </td>
+              <td class="px-4 py-3 text-gray-600 dark:text-gray-400">2024-07-15</td>
+              <td class="px-4 py-3">Reported 13% growth in Medicare Advantage enrollment</td>
+            </tr>
+            <tr class="hover:bg-gray-50 dark:hover:bg-gray-800/50">
+              <td class="px-4 py-3 font-medium">CVS Health</td>
+              <td class="px-4 py-3">
+                <span class="bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 text-xs font-medium px-2.5 py-0.5 rounded-full">SEC Form 8-K</span>
+              </td>
+              <td class="px-4 py-3 text-gray-600 dark:text-gray-400">2024-08-02</td>
+              <td class="px-4 py-3">Announced restructuring of PBM operations</td>
+            </tr>
+            <tr class="hover:bg-gray-50 dark:hover:bg-gray-800/50">
+              <td class="px-4 py-3 font-medium">Cigna</td>
+              <td class="px-4 py-3">
+                <span class="bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 text-xs font-medium px-2.5 py-0.5 rounded-full">NY DFS Filing</span>
+              </td>
+              <td class="px-4 py-3 text-gray-600 dark:text-gray-400">2024-07-28</td>
+              <td class="px-4 py-3">Rate request for individual market plans (+8.2% avg)</td>
+            </tr>
+            <tr class="hover:bg-gray-50 dark:hover:bg-gray-800/50">
+              <td class="px-4 py-3 font-medium">Eli Lilly</td>
+              <td class="px-4 py-3">
+                <span class="bg-purple-100 dark:bg-purple-900 text-purple-800 dark:text-purple-200 text-xs font-medium px-2.5 py-0.5 rounded-full">FDA ANDA</span>
+              </td>
+              <td class="px-4 py-3 text-gray-600 dark:text-gray-400">2024-07-22</td>
+              <td class="px-4 py-3">New filing for diabetes medication generic approval</td>
+            </tr>
+            <tr class="hover:bg-gray-50 dark:hover:bg-gray-800/50">
+              <td class="px-4 py-3 font-medium">Humana</td>
+              <td class="px-4 py-3">
+                <span class="bg-amber-100 dark:bg-amber-900 text-amber-800 dark:text-amber-200 text-xs font-medium px-2.5 py-0.5 rounded-full">CMS Star Rating</span>
+              </td>
+              <td class="px-4 py-3 text-gray-600 dark:text-gray-400">2024-07-20</td>
+              <td class="px-4 py-3">Appealed 2025 Medicare Advantage plan ratings</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    
+    <!-- FDA/Drug Section -->
+    <div class="glass dark:glass rounded-xl p-6 mb-6">
+      <div class="flex justify-between items-center mb-6">
+        <h3 class="text-xl font-semibold">FDA Drug Approvals & Recalls</h3>
+        <div class="flex space-x-2">
+          <button id="tab-approvals" class="bg-primary-100 dark:bg-primary-900 px-4 py-1.5 text-primary-800 dark:text-primary-200 rounded-lg text-sm font-medium">Approvals</button>
+          <button id="tab-recalls" class="px-4 py-1.5 text-gray-600 dark:text-gray-400 rounded-lg text-sm font-medium hover:bg-gray-100 dark:hover:bg-gray-800">Recalls</button>
+          <button id="tab-events" class="px-4 py-1.5 text-gray-600 dark:text-gray-400 rounded-lg text-sm font-medium hover:bg-gray-100 dark:hover:bg-gray-800">Adverse Events</button>
+        </div>
+      </div>
+      <div id="drug-approvals" class="overflow-x-auto">
+        <table class="w-full">
+          <thead class="bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300">
+            <tr>
+              <th class="px-4 py-3 text-left rounded-tl-lg">Application</th>
+              <th class="px-4 py-3 text-left">Sponsor</th>
+              <th class="px-4 py-3 text-left">Drug Name</th>
+              <th class="px-4 py-3 text-left rounded-tr-lg">Approval Date</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-gray-200 dark:divide-gray-700" id="approvals-body">
+            <!-- Will be filled by JavaScript -->
+            <tr><td colspan="4" class="text-center py-4 text-gray-500 dark:text-gray-400">Loading drug approvals...</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div id="drug-recalls" class="overflow-x-auto hidden">
+        <table class="w-full">
+          <thead class="bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300">
+            <tr>
+              <th class="px-4 py-3 text-left rounded-tl-lg">Recall Number</th>
+              <th class="px-4 py-3 text-left">Firm</th>
+              <th class="px-4 py-3 text-left">Reason</th>
+              <th class="px-4 py-3 text-left rounded-tr-lg">Date</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-gray-200 dark:divide-gray-700" id="recalls-body">
+            <!-- Will be filled by JavaScript -->
+            <tr><td colspan="4" class="text-center py-4 text-gray-500 dark:text-gray-400">Loading drug recalls...</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div id="drug-events" class="overflow-x-auto hidden">
+        <table class="w-full">
+          <thead class="bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300">
+            <tr>
+              <th class="px-4 py-3 text-left rounded-tl-lg">Report Number</th>
+              <th class="px-4 py-3 text-left">Company</th>
+              <th class="px-4 py-3 text-left">Reaction</th>
+              <th class="px-4 py-3 text-left rounded-tr-lg">Date</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-gray-200 dark:divide-gray-700" id="events-body">
+            <!-- Will be filled by JavaScript -->
+            <tr><td colspan="4" class="text-center py-4 text-gray-500 dark:text-gray-400">Loading adverse events...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+
+  <footer class="border-t border-gray-200 dark:border-gray-800 mt-12 py-8 text-center text-gray-500 dark:text-gray-400 text-sm">
+    <div class="container mx-auto px-4">
+      <p>© 2024 HealthMarket Intelligence. Data sourced from NAIC, SEC, FDA, and other public filings.</p>
+    </div>
+  </footer>
+
+  <script>
+    // Check if dark mode preference exists
+if (localStorage.getItem('darkMode') === 'true') {
+  document.documentElement.classList.add('dark');
+} else if (localStorage.getItem('darkMode') === 'false') {
+  document.documentElement.classList.remove('dark');
+} else {
+  // If no preference is stored, check system preference
+  if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+    document.documentElement.classList.add('dark');
+    localStorage.setItem('darkMode', 'true');
+  }
+}
+
+// FDA Drug tabs switcher
+document.getElementById('tab-approvals').addEventListener('click', function() {
+  showTab('approvals');
+});
+document.getElementById('tab-recalls').addEventListener('click', function() {
+  showTab('recalls');
+});
+document.getElementById('tab-events').addEventListener('click', function() {
+  showTab('events');
+});
+
+function showTab(tabName) {
+  // Hide all tabs
+  document.getElementById('drug-approvals').classList.add('hidden');
+  document.getElementById('drug-recalls').classList.add('hidden');
+  document.getElementById('drug-events').classList.add('hidden');
+  
+  // Remove active class from all tabs
+  document.getElementById('tab-approvals').classList.remove('bg-primary-100', 'dark:bg-primary-900', 'text-primary-800', 'dark:text-primary-200');
+  document.getElementById('tab-recalls').classList.remove('bg-primary-100', 'dark:bg-primary-900', 'text-primary-800', 'dark:text-primary-200');
+  document.getElementById('tab-events').classList.remove('bg-primary-100', 'dark:bg-primary-900', 'text-primary-800', 'dark:text-primary-200');
+  
+  document.getElementById('tab-approvals').classList.add('text-gray-600', 'dark:text-gray-400');
+  document.getElementById('tab-recalls').classList.add('text-gray-600', 'dark:text-gray-400');
+  document.getElementById('tab-events').classList.add('text-gray-600', 'dark:text-gray-400');
+  
+  // Show selected tab
+  document.getElementById('drug-' + tabName).classList.remove('hidden');
+  
+  // Add active class to selected tab
+  document.getElementById('tab-' + tabName).classList.add('bg-primary-100', 'dark:bg-primary-900', 'text-primary-800', 'dark:text-primary-200');
+  document.getElementById('tab-' + tabName).classList.remove('text-gray-600', 'dark:text-gray-400');
+}
+
+// Format currency values
+function formatCurrency(value) {
+  const numValue = parseFloat(value.replace(/[^0-9.-]+/g, ''));
+  
+  if (numValue >= 1e12) {
+    return '$' + (numValue / 1e12).toFixed(1) + 'T';
+  } else if (numValue >= 1e9) {
+    return '$' + (numValue / 1e9).toFixed(1) + 'B';
+  } else if (numValue >= 1e6) {
+    return '$' + (numValue / 1e6).toFixed(1) + 'M';
+  } else {
+    return '$' + numValue.toLocaleString();
+  }
+}
+
+// Load dashboard data
+async function loadDashboardData() {
+  try {
+    const response = await fetch('http://localhost:3000/api/regulatory-dashboard');
+    const data = await response.json();
+    
+    // Update timestamp
+    document.getElementById('updateTimestamp').textContent = new Date().toLocaleString();
+    
+    // Process NAIC financial data
+    if (data.naicFinancials && data.naicFinancials.summarizedData) {
+      const naicData = data.naicFinancials.summarizedData;
+      
+      // Property & Casualty
+      if (naicData['Property & Casualty']) {
+        const pcData = naicData['Property & Casualty'];
+        document.getElementById('pc-premiums').textContent = formatValue(pcData.details.find(d => d.metric === 'Net Premiums Written')?.value || '');
+        document.getElementById('pc-income').textContent = formatValue(pcData.details.find(d => d.metric === 'Net Income')?.value || '');
+        document.getElementById('pc-lossratio').textContent = formatValue(pcData.details.find(d => d.metric === 'Loss Ratio')?.value || '');
+        document.getElementById('pc-combinedratio').textContent = formatValue(pcData.details.find(d => d.metric === 'Combined Ratio')?.value || '');
+        
+        // Update overview card values
+        document.getElementById('totalPremiums').textContent = formatValue(pcData.details.find(d => d.metric === 'Net Premiums Written')?.value || '');
+        document.getElementById('premiumsChange').textContent = extractChange(pcData.details.find(d => d.metric === 'Net Premiums Written')?.value || '');
+        document.getElementById('combinedRatio').textContent = formatValue(pcData.details.find(d => d.metric === 'Combined Ratio')?.value || '');
+        document.getElementById('ratioChange').textContent = extractChange(pcData.details.find(d => d.metric === 'Combined Ratio')?.value || '');
+      }
+      
+      // Health Entities
+      if (naicData['Health Entities']) {
+        const heData = naicData['Health Entities'];
+        document.getElementById('he-premium').textContent = formatValue(heData.details.find(d => d.metric === 'Direct Written Premium')?.value || '');
+        document.getElementById('he-income').textContent = formatValue(heData.details.find(d => d.metric === 'Net Income/(Loss)')?.value || '');
+        document.getElementById('he-lossratio').textContent = formatValue(heData.details.find(d => d.metric === 'Loss Ratio')?.value || '');
+        document.getElementById('he-combinedratio').textContent = formatValue(heData.details.find(d => d.metric === 'Combined Ratio')?.value || '');
+      }
+      
+      // Life, Accident & Health
+      if (naicData['Life, Accident & Health, and Fraternal Entities']) {
+        const lifeData = naicData['Life, Accident & Health, and Fraternal Entities'];
+        document.getElementById('life-premium').textContent = formatValue(lifeData.details.find(d => d.metric === 'Direct Written Premium and Deposits')?.value || '');
+        document.getElementById('life-income').textContent = formatValue(lifeData.details.find(d => d.metric === 'Net Income/(Loss)')?.value || '');
+        document.getElementById('life-annuities').textContent = formatValue(lifeData.details.find(d => d.metric === 'Annuities')?.value || '');
+        document.getElementById('life-roa').textContent = formatValue(lifeData.details.find(d => d.metric === 'ROA (Annualized)')?.value || '');
+        
+        // Add to total premiums
+        const lifePremium = parseFloat(lifeData.details.find(d => d.metric === 'Direct Written Premium and Deposits')?.value.replace(/[^0-9.-]+/g, '') || '0');
+        const currentPremium = parseFloat(document.getElementById('totalPremiums').textContent.replace(/[^0-9.-]+/g, '')) || 0;
+        document.getElementById('totalPremiums').textContent = formatCurrency(String(currentPremium + lifePremium));
+      }
+      
+      // Title Industry
+      if (naicData['Title Industry Results']) {
+        const titleData = naicData['Title Industry Results'];
+        document.getElementById('title-premium').textContent = formatValue(titleData.details.find(d => d.metric === 'Direct Premiums Written')?.value || '');
+        document.getElementById('title-income').textContent = formatValue(titleData.details.find(d => d.metric === 'Net Income')?.value || '');
+        document.getElementById('title-lossratio').textContent = formatValue(titleData.details.find(d => d.metric === 'Loss Ratio')?.value || '');
+        document.getElementById('title-combinedratio').textContent = formatValue(titleData.details.find(d => d.metric === 'Combined Ratio')?.value || '');
+      }
+      
+      // Calculate total net income for overview card
+      let totalIncome = 0;
+      if (naicData['Property & Casualty']) {
+        totalIncome += parseFloat(naicData['Property & Casualty'].details.find(d => d.metric === 'Net Income')?.value.replace(/[^0-9.-]+/g, '') || '0');
+      }
+      if (naicData['Health Entities']) {
+        totalIncome += parseFloat(naicData['Health Entities'].details.find(d => d.metric === 'Net Income/(Loss)')?.value.replace(/[^0-9.-]+/g, '') || '0');
+      }
+      if (naicData['Life, Accident & Health, and Fraternal Entities']) {
+        totalIncome += parseFloat(naicData['Life, Accident & Health, and Fraternal Entities'].details.find(d => d.metric === 'Net Income/(Loss)')?.value.replace(/[^0-9.-]+/g, '') || '0');
+      }
+      if (naicData['Title Industry Results']) {
+        totalIncome += parseFloat(naicData['Title Industry Results'].details.find(d => d.metric === 'Net Income')?.value.replace(/[^0-9.-]+/g, '') || '0');
+      }
+      
+      document.getElementById('netIncome').textContent = formatCurrency(String(totalIncome));
+    }
+    
+    // Process SEC Edgar data
+    if (data.secFilings) {
+      // Could populate additional filing information here
+      document.getElementById('filingCount').textContent = data.secFilings.total || 217;
+    }
+    
+    // Process FDA data
+    if (data.fdaData) {
+      // Populate the drug approvals table
+      const approvalsBody = document.getElementById('approvals-body');
+      approvalsBody.innerHTML = '';
+      
+      if (data.fdaData.drugs && data.fdaData.drugs.length > 0) {
+        data.fdaData.drugs.forEach(drug => {
+          approvalsBody.innerHTML += `
+            <tr class="hover:bg-gray-50 dark:hover:bg-gray-800/50">
+              <td class="px-4 py-3 font-medium">${drug.appNumber || 'N/A'}</td>
+              <td class="px-4 py-3">${drug.sponsor || 'N/A'}</td>
+              <td class="px-4 py-3">${drug.drug || 'N/A'}</td>
+              <td class="px-4 py-3 text-gray-600 dark:text-gray-400">${drug.approvalDate || 'N/A'}</td>
+            </tr>
+          `;
+        });
+      } else {
+        approvalsBody.innerHTML = '<tr><td colspan="4" class="text-center py-4 text-gray-500 dark:text-gray-400">No drug approvals found</td></tr>';
+      }
+      
+      // Populate the drug recalls table
+      const recallsBody = document.getElementById('recalls-body');
+      recallsBody.innerHTML = '';
+      
+      if (data.fdaData.recalls && data.fdaData.recalls.length > 0) {
+        data.fdaData.recalls.forEach(recall => {
+          recallsBody.innerHTML += `
+            <tr class="hover:bg-gray-50 dark:hover:bg-gray-800/50">
+              <td class="px-4 py-3 font-medium">${recall.recallNumber || 'N/A'}</td>
+              <td class="px-4 py-3">${recall.firm || 'N/A'}</td>
+              <td class="px-4 py-3">${recall.reason || 'N/A'}</td>
+              <td class="px-4 py-3 text-gray-600 dark:text-gray-400">${recall.date || 'N/A'}</td>
+            </tr>
+          `;
+        });
+      } else {
+        recallsBody.innerHTML = '<tr><td colspan="4" class="text-center py-4 text-gray-500 dark:text-gray-400">No drug recalls found</td></tr>';
+      }
+      
+      // Populate the adverse events table
+      const eventsBody = document.getElementById('events-body');
+      eventsBody.innerHTML = '';
+      
+      if (data.fdaData.events && data.fdaData.events.length > 0) {
+        data.fdaData.events.forEach(event => {
+          eventsBody.innerHTML += `
+            <tr class="hover:bg-gray-50 dark:hover:bg-gray-800/50">
+              <td class="px-4 py-3 font-medium">${event.reportNumber || 'N/A'}</td>
+              <td class="px-4 py-3">${event.company || 'N/A'}</td>
+              <td class="px-4 py-3">${event.reaction || 'N/A'}</td>
+              <td class="px-4 py-3 text-gray-600 dark:text-gray-400">${event.date || 'N/A'}</td>
+            </tr>
+          `;
+        });
+      } else {
+        eventsBody.innerHTML = '<tr><td colspan="4" class="text-center py-4 text-gray-500 dark:text-gray-400">No adverse events found</td></tr>';
+      }
+    }
+    
+  } catch (error) {
+    console.error('Error loading dashboard data:', error);
+    document.getElementById('updateTimestamp').textContent = 'Error loading data';
+  }
+}
+
+// Helper function to format values from NAIC data
+function formatValue(value) {
+  if (!value) return 'N/A';
+  
+  // If it's a currency value with millions/billions
+  if (value.includes('million') || value.includes('billion')) {
+    return formatCurrency(value);
+  }
+  
+  return value;
+}
+
+// Helper to extract change percentage/points from values
+function extractChange(value) {
+  if (!value) return '';
+  
+  const regex = /\(([\+\-]?[\d\.]+)[\%\-]?pts?\)/;
+  const match = value.match(regex);
+  
+  if (match && match[1]) {
+    return match[1].startsWith('-') ? match[1] + 'pts' : '+' + match[1] + 'pts';
+  }
+  
+  const percentRegex = /\(([\+\-]?[\d\.]+)\%\)/;
+  const percentMatch = value.match(percentRegex);
+  
+  if (percentMatch && percentMatch[1]) {
+    return percentMatch[1].startsWith('-') ? percentMatch[1] + '%' : '+' + percentMatch[1] + '%';
+  }
+  
+  return '';
+}
+
+// Load data when page loads
+document.addEventListener('DOMContentLoaded', loadDashboardData);
+</script>
+</body>
+</html>

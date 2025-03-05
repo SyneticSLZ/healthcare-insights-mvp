@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Insurance & PBM Data Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Custom scrollbar */
+        .scrollable-table::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        .scrollable-table::-webkit-scrollbar-thumb {
+            background-color: #6b7280;
+            border-radius: 4px;
+        }
+        .scrollable-table::-webkit-scrollbar-track {
+            background: #f3f4f6;
+        }
+        /* Table cell truncation with hover tooltip */
+        .truncate-cell {
+            max-width: 200px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .truncate-cell:hover {
+            overflow: visible;
+            white-space: normal;
+            background: #f9fafb;
+            position: relative;
+            z-index: 10;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen font-sans antialiased">
+    <div class="container mx-auto p-6">
+        <!-- Header -->
+        <h1 class="text-4xl font-extrabold text-gray-900 mb-8 text-center">Insurance & PBM Data Dashboard</h1>
+
+        <!-- Dataset Selection Grid -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mb-8">
+            <button class="dataset-btn bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-3 px-4 rounded-lg shadow-md transition duration-200" data-endpoint="pecos">Physician & Practitioner</button>
+            <button class="dataset-btn bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-3 px-4 rounded-lg shadow-md transition duration-200" data-endpoint="partd-prescriber">Part D Prescriber</button>
+            <button class="dataset-btn bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-3 px-4 rounded-lg shadow-md transition duration-200" data-endpoint="partd-plans">Part D Plans</button>
+            <button class="dataset-btn bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-3 px-4 rounded-lg shadow-md transition duration-200" data-endpoint="ma-enrollment">MA Enrollment</button>
+            <button class="dataset-btn bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-3 px-4 rounded-lg shadow-md transition duration-200" data-endpoint="marketplace-puf">Marketplace PUF</button>
+            <!-- <button class="dataset-btn bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-3 px-4 rounded-lg shadow-md transition duration-200" data-endpoint="cost-reports">Cost Reports</button> -->
+            <button class="dataset-btn bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-3 px-4 rounded-lg shadow-md transition duration-200" data-endpoint="mcbs">MCBS</button>
+            <button class="dataset-btn bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-3 px-4 rounded-lg shadow-md transition duration-200" data-endpoint="nhe">NHE</button>
+            <!-- <button class="dataset-btn bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-3 px-4 rounded-lg shadow-md transition duration-200" data-endpoint="cms-stats">CMS Stats</button> -->
+            <button class="dataset-btn bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-3 px-4 rounded-lg shadow-md transition duration-200" data-endpoint="mmleads">MMLEADS</button>
+            <button class="dataset-btn bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-3 px-4 rounded-lg shadow-md transition duration-200" data-endpoint="sec-edgar">SEC EDGAR</button>
+            <button class="dataset-btn bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-3 px-4 rounded-lg shadow-md transition duration-200" data-endpoint="naic-financials">NAIC Financials</button>
+            <!-- <button class="dataset-btn bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-3 px-4 rounded-lg shadow-md transition duration-200" data-endpoint="state-filings">State Filings</button> -->
+            <!-- <button class="dataset-btn bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-3 px-4 rounded-lg shadow-md transition duration-200" data-endpoint="hhs-open">HHS Open Data</button> -->
+            <button class="dataset-btn bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-3 px-4 rounded-lg shadow-md transition duration-200" data-endpoint="ndc-directory">NDC Directory</button>
+            <button class="dataset-btn bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-3 px-4 rounded-lg shadow-md transition duration-200" data-endpoint="ama-pbm">AMA PBM Analysis</button>
+            <button class="dataset-btn bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-3 px-4 rounded-lg shadow-md transition duration-200" data-endpoint="partd-spending-by-drug">Part D Spending</button>
+            <button class="dataset-btn bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-3 px-4 rounded-lg shadow-md transition duration-200" data-endpoint="spending-by-drug">Spending by Drug</button>
+            <button class="dataset-btn bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-3 px-4 rounded-lg shadow-md transition duration-200" data-endpoint="medicaid-cms64-caa-2023">Medicaid CMS-64 CAA</button>
+            <button class="dataset-btn bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-3 px-4 rounded-lg shadow-md transition duration-200" data-endpoint="drug-amp-reporting">Drug AMP Reporting</button>
+            <button class="dataset-btn bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-3 px-4 rounded-lg shadow-md transition duration-200" data-endpoint="newly-reported-drugs">Newly Reported Drugs</button>
+            <button class="dataset-btn bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-3 px-4 rounded-lg shadow-md transition duration-200" data-endpoint="state-drug-utilization-2024">Drug Utilization 2024</button>
+            <button class="dataset-btn bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-3 px-4 rounded-lg shadow-md transition duration-200" data-endpoint="managed-care-enrollment">Managed Care Enrollment</button>
+        </div>
+
+        <!-- Loading Indicator -->
+        <div id="loading" class="hidden text-center text-gray-600 mb-6">
+            <svg class="animate-spin h-6 w-6 mx-auto text-indigo-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8h8a8 8 0 01-8 8 8 8 0 01-8-8z"></path>
+            </svg>
+            <p class="mt-2">Loading data...</p>
+        </div>
+
+        <!-- Error Display -->
+        <div id="error" class="hidden bg-red-50 border-l-4 border-red-600 text-red-800 p-4 mb-6 rounded-lg shadow-sm">
+            <p class="font-semibold">Error</p>
+            <p id="error-message" class="text-sm"></p>
+        </div>
+
+        <!-- Data Container -->
+        <div id="data-container" class="hidden bg-white shadow-lg rounded-lg overflow-hidden">
+            <div class="p-6 border-b border-gray-200">
+                <h2 id="dataset-title" class="text-2xl font-semibold text-gray-800"></h2>
+            </div>
+            <div id="tables-container" class="p-6 space-y-6"></div>
+            <div id="pagination" class="p-6 border-t border-gray-200 flex justify-between items-center text-gray-600 text-sm"></div>
+        </div>
+    </div>
+
+    <script>
+        const BASE_URL = 'http://localhost:3000/api';
+        const datasetButtons = document.querySelectorAll('.dataset-btn');
+        const loading = document.getElementById('loading');
+        const errorDiv = document.getElementById('error');
+        const errorMessage = document.getElementById('error-message');
+        const dataContainer = document.getElementById('data-container');
+        const datasetTitle = document.getElementById('dataset-title');
+        const tablesContainer = document.getElementById('tables-container');
+        const pagination = document.getElementById('pagination');
+
+        async function fetchData(endpoint) {
+            resetUI();
+            loading.classList.remove('hidden');
+
+            try {
+                const response = await fetch(`${BASE_URL}/${endpoint}`);
+                if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+                const data = await response.json();
+                displayData(endpoint, data);
+            } catch (error) {
+                showError(`Failed to fetch ${endpoint} data: ${error.message}`);
+            } finally {
+                loading.classList.add('hidden');
+            }
+        }
+
+        function resetUI() {
+            errorDiv.classList.add('hidden');
+            dataContainer.classList.add('hidden');
+            tablesContainer.innerHTML = '';
+            pagination.innerHTML = '';
+        }
+
+        function showError(message) {
+            errorDiv.classList.remove('hidden');
+            errorMessage.textContent = message;
+        }
+
+        function createTable(title, headers, rows) {
+            const table = document.createElement('div');
+            table.className = 'scrollable-table max-h-96 overflow-auto bg-white rounded-lg shadow-sm border border-gray-100';
+            table.innerHTML = `
+                <h3 class="text-lg font-medium text-gray-700 px-4 py-3 border-b border-gray-200">${title}</h3>
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50 sticky top-0">
+                        <tr>
+                            ${headers.map(h => `
+                                <th class="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">${h}</th>
+                            `).join('')}
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-200">
+                        ${rows.map(row => `
+                            <tr class="hover:bg-gray-50">
+                                ${headers.map(h => `
+                                    <td class="px-4 py-3 text-sm text-gray-900 truncate-cell">${row[h] || '-'}</td>
+                                `).join('')}
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+            `;
+            tablesContainer.appendChild(table);
+        }
+
+        function displayData(endpoint, data) {
+            if (!data) {
+                showError('No data returned from the server.');
+                return;
+            }
+
+            datasetTitle.textContent = endpoint.replace(/-/g, ' ').toUpperCase();
+            dataContainer.classList.remove('hidden');
+
+            if (typeof data === 'string') {
+                tablesContainer.innerHTML = `
+                    <div class="p-4 text-sm text-gray-800 whitespace-pre-wrap bg-gray-50 rounded-lg border border-gray-100">${data}</div>
+                `;
+                return;
+            }
+
+            if (endpoint === 'naic-financials') {
+      for (const [section, summary] of Object.entries(data.summarizedData || {})) {
+        const headers = ['Metric', 'Value'];
+        const rows = Object.entries(summary.summary).map(([metric, value]) => ({ Metric: metric, Value: value }));
+        createTable(`${section} Summary`, headers, rows);
+        // Optional: Display all details
+        const detailRows = summary.details.map(d => ({ Metric: d.metric, Value: d.value }));
+        createTable(`${section} Details`, headers, detailRows);
+      }
+      pagination.innerHTML = `Sections: ${Object.keys(data.summarizedData || {}).length}`;
+      return;
+    }
+
+    if (endpoint === 'ama-pbm') {
+      tablesContainer.innerHTML = `
+        <div class="space-y-6">
+          ${Object.entries(data.summarizedData.summary || {}).map(([section, lines]) => `
+            <div class="p-4 bg-gray-50 rounded-lg border border-gray-100">
+              <h3 class="text-lg font-medium text-gray-700">${section}</h3>
+              <p class="text-sm text-gray-600 mt-2">${lines.join('<br>')}</p>
+            </div>
+          `).join('')}
+          ${Object.entries(data.summarizedData.tables || {}).map(([title, table]) => `
+            <div class="scrollable-table max-h-96 overflow-auto bg-white rounded-lg shadow-sm border border-gray-100">
+              <h3 class="text-lg font-medium text-gray-700 px-4 py-3 border-b border-gray-200">${title}</h3>
+              <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50 sticky top-0">
+                  <tr>
+                    ${table.headers.map(h => `
+                      <th class="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">${h}</th>
+                    `).join('')}
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-200">
+                  ${table.data.map(row => `
+                    <tr class="hover:bg-gray-50">
+                      ${table.headers.map(h => `
+                        <td class="px-4 py-3 text-sm text-gray-900 truncate-cell">${row[h] || '-'}</td>
+                      `).join('')}
+                    </tr>
+                  `).join('')}
+                </tbody>
+              </table>
+            </div>
+          `).join('')}
+          <div class="p-4 bg-gray-50 rounded-lg border border-gray-100">
+            <h3 class="text-lg font-medium text-gray-700">Key Insights</h3>
+            ${Object.entries(data.keyInsights || {}).map(([objective, insights]) => `
+              <div class="mt-2">
+                <h4 class="text-md font-semibold text-gray-600">${objective}</h4>
+                <ul class="list-disc list-inside text-sm text-gray-600">
+                  ${insights.map(insight => `<li>${insight}</li>`).join('')}
+                </ul>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      `;
+      pagination.innerHTML = `Tables: ${Object.keys(data.summarizedData.tables || {}).length}, Sections: ${Object.keys(data.summarizedData.summary || {}).length}`;
+      return;
+    }
+
+
+            if (endpoint === 'sec-edgar') {
+                const headers = ['metric', 'value', 'unit'];
+                createTable('SEC Financial Metrics', headers, data.items || []);
+                pagination.innerHTML = `Total Items: ${data.total}`;
+                return;
+            }
+
+            if (endpoint === 'ndc-directory') {
+                createTable('Approved Drugs', ['appNumber', 'sponsor', 'drug', 'approvalDate'], data.drugs || []);
+                createTable('Drug Recalls', ['recallNumber', 'firm', 'reason', 'date'], data.recalls || []);
+                createTable('Adverse Events', ['reportNumber', 'company', 'date', 'reaction'], data.events || []);
+                pagination.innerHTML = `
+                    Drugs: ${data.totalDrugs} | Recalls: ${data.totalRecalls} | Events: ${data.totalEvents}
+                `;
+                return;
+            }
+
+            if (endpoint === 'nhe' || endpoint === 'mcbs' || endpoint === 'mmleads' || endpoint === 'marketplace-puf') {
+        // Check if we have a complex nested structure
+        if (!Array.isArray(data) && typeof data === 'object') {
+            // Loop through each report/dataset
+            for (const [reportName, reportData] of Object.entries(data)) {
+                if (reportData && Array.isArray(reportData.data)) {
+                    // We found actual data to display
+                    const records = reportData.data;
+                    const headers = records[0] ? Object.keys(records[0]) : [];
+                    
+                    if (headers.length > 0) {
+                        createTable(`${reportName}`, headers, records.slice(0, 50)); // Limit to 50 rows
+                    } else {
+                        // Create an info panel if no tabular data available
+                        const infoPanel = document.createElement('div');
+                        infoPanel.className = 'p-4 bg-gray-50 rounded-lg border border-gray-100';
+                        infoPanel.innerHTML = `
+                            <h3 class="text-lg font-medium text-gray-700">${reportName}</h3>
+                            <p class="text-sm text-gray-600 mt-2">${reportData.description || 'No description available'}</p>
+                            <p class="text-sm text-gray-500 mt-1">Data is not available for display.</p>
+                        `;
+                        tablesContainer.appendChild(infoPanel);
+                    }
+                } else if (reportData && typeof reportData === 'object' && !reportData.data) {
+                    // Handle case where we have report metadata but no actual data
+                    const infoPanel = document.createElement('div');
+                    infoPanel.className = 'p-4 bg-gray-50 rounded-lg border border-gray-100';
+                    infoPanel.innerHTML = `
+                        <h3 class="text-lg font-medium text-gray-700">${reportName}</h3>
+                        <p class="text-sm text-gray-600 mt-2">${reportData.description || 'No description available'}</p>
+                        <p class="text-sm text-red-500 mt-1">${reportData.note || 'This dataset requires download from external source.'}</p>
+                    `;
+                    tablesContainer.appendChild(infoPanel);
+                }
+            }
+            
+            pagination.innerHTML = `Reports: ${Object.keys(data).length}`;
+            return;
+        }
+    }
+
+            const rows = Array.isArray(data) ? data : [data];
+    const headers = rows[0] ? Object.keys(rows[0]) : [];
+    if (headers.length === 0) {
+      showError('No valid columns found in the data.');
+      return;
+    }
+
+    createTable('Dataset Records', headers, rows.slice(0, 50)); // Limit to 50 rows
+    pagination.innerHTML = `Showing ${Math.min(rows.length, 50)} of ${rows.length} records`;
+  }
+
+        datasetButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                const endpoint = button.getAttribute('data-endpoint');
+                fetchData(endpoint);
+            });
+        });
+    </script>
+</body>
+</html>

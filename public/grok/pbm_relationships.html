@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PBM-Insurer Relationship Mapping</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            primary: { 50: '#e6f1fe', 100: '#cce3fd', 500: '#3b82f6', 600: '#2563eb', 700: '#1d4ed8', 800: '#1e40af', 900: '#1e3a8a' },
+            secondary: { 100: '#d1fae5', 500: '#10b981', 700: '#047857' },
+            dark: { 800: '#1e293b', 900: '#0f172a' }
+          },
+          animation: { 'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite' }
+        }
+      }
+    }
+  </script>
+  <style type="text/tailwindcss">
+    @layer utilities {
+      .glass { @apply bg-white/10 backdrop-blur-md border border-white/20 shadow-xl; }
+      .card-hover { @apply transition-all duration-300 hover:shadow-lg hover:-translate-y-1; }
+    }
+  </style>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="min-h-screen bg-gradient-to-br from-slate-50 to-slate-200 dark:from-dark-900 dark:to-dark-800 text-gray-800 dark:text-gray-100">
+  <div class="absolute top-0 left-0 w-full h-32 bg-purple-600 dark:bg-purple-900 transform -skew-y-2 origin-top-left -translate-y-10 z-0"></div>
+
+  <header class="relative z-10 pt-6">
+    <nav class="container mx-auto px-4 py-4 flex justify-between items-center">
+      <div class="flex items-center space-x-2">
+        <div class="bg-white dark:bg-purple-700 p-2 rounded-lg shadow-md">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-purple-700 dark:text-white" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M10 2a1 1 0 011 1v1.323l3.954 1.582 1.599-.8a1 1 0 01.894 1.79l-1.233.616 1.738 5.42a1 1 0 01-.285 1.05A3.989 3.989 0 0115 15a3.989 3.989 0 01-2.667-1.019 1 1 0 01-.285-1.05l1.715-5.349L11 6.477V16h2a1 1 0 110 2H7a1 1 0 110-2h2V6.477L6.237 7.582l1.715 5.349a1 1 0 01-.285 1.05A3.989 3.989 0 015 15a3.989 3.989 0 01-2.667-1.019 1 1 0 01-.285-1.05l1.738-5.42-1.233-.617a1 1 0 01.894-1.788l1.599.799L9 4.323V3a1 1 0 011-1z" clip-rule="evenodd" />
+          </svg>
+        </div>
+        <h1 class="text-2xl font-bold">HealthMarket Intelligence</h1>
+      </div>
+      <div class="flex items-center space-x-4">
+        <a href="index.html" class="text-gray-600 dark:text-gray-300 hover:text-purple-700 dark:hover:text-purple-300 transition-colors px-1">Regulatory Tracking</a>
+        <a href="pbm_relationships.html" class="font-semibold text-purple-700 dark:text-purple-100 border-b-2 border-purple-600 dark:border-purple-500 px-1">PBM Relationships</a>
+        <a href="market_share.html" class="text-gray-600 dark:text-gray-300 hover:text-purple-700 dark:hover:text-purple-300 transition-colors px-1">Market Analysis</a>
+        <button id="toggleDarkMode" class="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">
+          <i class="fas fa-moon dark:hidden"></i>
+          <i class="fas fa-sun hidden dark:block"></i>
+        </button>
+      </div>
+    </nav>
+  </header>
+  
+  <main class="container mx-auto px-4 py-8 relative z-10">
+    <div class="flex justify-between items-center mb-8">
+      <h2 class="text-3xl font-bold text-gray-800 dark:text-white">PBM-Insurer Relationship Mapping</h2>
+      <div class="flex items-center space-x-2 text-sm">
+        <span class="text-gray-500 dark:text-gray-400">Last updated:</span>
+        <span id="updateTimestamp" class="font-medium">Loading...</span>
+      </div>
+    </div>
+    
+    <!-- Overview Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+      <div class="glass dark:glass p-6 rounded-xl card-hover">
+        <div class="flex items-start justify-between">
+          <div>
+            <p class="text-gray-500 dark:text-gray-400 text-sm font-medium">Vertical Integration (National)</p>
+            <h3 id="nationalVerticalIntegration" class="text-3xl font-bold mt-1">Loading...</h3>
+          </div>
+          <div class="bg-purple-100 dark:bg-purple-900/60 p-3 rounded-lg">
+            <i class="fas fa-link text-purple-600 dark:text-purple-300"></i>
+          </div>
+        </div>
+        <div class="mt-3 text-sm text-gray-600 dark:text-gray-400">
+          <span>of PDP lives are vertically integrated</span>
+        </div>
+      </div>
+      <div class="glass dark:glass p-6 rounded-xl card-hover">
+        <div class="flex items-start justify-between">
+          <div>
+            <p class="text-gray-500 dark:text-gray-400 text-sm font-medium">Commercial Integration</p>
+            <h3 id="commercialVerticalIntegration" class="text-3xl font-bold mt-1">Loading...</h3>
+          </div>
+          <div class="bg-blue-100 dark:bg-blue-900/60 p-3 rounded-lg">
+            <i class="fas fa-briefcase text-blue-600 dark:text-blue-300"></i>
+          </div>
+        </div>
+        <div class="mt-3 text-sm text-gray-600 dark:text-gray-400">
+          <span>of commercial PDP lives</span>
+        </div>
+      </div>
+      <div class="glass dark:glass p-6 rounded-xl card-hover">
+        <div class="flex items-start justify-between">
+          <div>
+            <p class="text-gray-500 dark:text-gray-400 text-sm font-medium">Medicare Part D Integration</p>
+            <h3 id="medicareVerticalIntegration" class="text-3xl font-bold mt-1">Loading...</h3>
+          </div>
+          <div class="bg-green-100 dark:bg-green-900/60 p-3 rounded-lg">
+            <i class="fas fa-pills text-green-600 dark:text-green-300"></i>
+          </div>
+        </div>
+        <div class="mt-3 text-sm text-gray-600 dark:text-gray-400">
+          <span>of Medicare Part D lives</span>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Integration Chart -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+      <div class="glass dark:glass p-6 rounded-xl md:col-span-2">
+        <h3 class="text-xl font-semibold mb-4">Vertical Integration by Market Type</h3>
+        <div class="h-80">
+          <canvas id="integrationChart"></canvas>
+        </div>
+      </div>
+      <div class="glass dark:glass p-6 rounded-xl">
+        <h3 class="text-xl font-semibold mb-4">Key Insights</h3>
+        <ul class="space-y-4" id="keyInsightsList"></ul>
+        <div class="mt-6 pt-4 border-t border-gray-200 dark:border-gray-700">
+          <h4 class="font-medium mb-2 text-gray-800 dark:text-gray-200">Regulatory Implications</h4>
+          <p class="text-gray-600 dark:text-gray-400 text-sm">
+            High vertical integration can potentially limit market competition and impact drug pricing. The FTC has been investigating rebate practices.
+          </p>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Vertical Integration Table -->
+    <div class="glass dark:glass rounded-xl p-6 mb-10">
+      <h3 class="text-xl font-semibold mb-6">Vertical Integration Statistics (2022)</h3>
+      <div class="overflow-x-auto">
+        <table class="w-full">
+          <thead class="bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300">
+            <tr>
+              <th class="px-4 py-3 text-left rounded-tl-lg">Geographic Market</th>
+              <th class="px-4 py-3 text-left">Overall Vertical Integration</th>
+              <th class="px-4 py-3 text-left">Commercial Market</th>
+              <th class="px-4 py-3 text-left rounded-tr-lg">Medicare Part D</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-gray-200 dark:divide-gray-700" id="integrationTableBody">
+            <tr><td colspan="4" class="text-center py-4">Loading...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    
+    <!-- Key PBM-Insurer Relationships -->
+    <div class="glass dark:glass rounded-xl p-6 mb-10">
+      <div class="flex justify-between items-center mb-6">
+        <h3 class="text-xl font-semibold">Key PBM-Insurer Relationships</h3>
+        <div class="flex space-x-2">
+          <div class="flex items-center space-x-1 text-sm">
+            <div class="w-3 h-3 rounded-full bg-purple-500"></div>
+            <span class="text-gray-600 dark:text-gray-400">Vertical Integration</span>
+          </div>
+          <div class="flex items-center space-x-1 text-sm">
+            <div class="w-3 h-3 rounded-full bg-gray-300 dark:bg-gray-600"></div>
+            <span class="text-gray-600 dark:text-gray-400">No Integration</span>
+          </div>
+        </div>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-4" id="relationshipsContainer"></div>
+    </div>
+    
+    <!-- PBM Functions & Services -->
+    <div class="glass dark:glass rounded-xl p-6 mb-10">
+      <h3 class="text-xl font-semibold mb-6">PBM Functions & Services</h3>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="bg-white dark:bg-gray-800 rounded-lg p-5 border border-gray-200 dark:border-gray-700 shadow-sm">
+          <div class="flex items-center mb-4">
+            <div class="bg-purple-100 dark:bg-purple-900/40 p-2 rounded-lg mr-3">
+              <i class="fas fa-handshake text-purple-600 dark:text-purple-300"></i>
+            </div>
+            <h4 class="font-semibold">Rebate Negotiation</h4>
+          </div>
+          <p class="text-sm text-gray-600 dark:text-gray-400">
+            Negotiating rebates with drug manufacturers for formulary placement. Manufacturers offer rebates for favorable placement.
+          </p>
+          <div class="mt-4 pt-3 border-t border-gray-200 dark:border-gray-700">
+            <div class="flex justify-between items-center">
+              <span class="text-sm text-gray-600 dark:text-gray-400">In-house rate:</span>
+              <span class="font-medium">2%</span>
+            </div>
+          </div>
+        </div>
+        <div class="bg-white dark:bg-gray-800 rounded-lg p-5 border border-gray-200 dark:border-gray-700 shadow-sm">
+          <div class="flex items-center mb-4">
+            <div class="bg-purple-100 dark:bg-purple-900/40 p-2 rounded-lg mr-3">
+              <i class="fas fa-store-alt text-purple-600 dark:text-purple-300"></i>
+            </div>
+            <h4 class="font-semibold">Retail Network Management</h4>
+          </div>
+          <p class="text-sm text-gray-600 dark:text-gray-400">
+            Building and managing networks of retail pharmacies, negotiating reimbursement rates and contract terms.
+          </p>
+          <div class="mt-4 pt-3 border-t border-gray-200 dark:border-gray-700">
+            <div class="flex justify-between items-center">
+              <span class="text-sm text-gray-600 dark:text-gray-400">In-house rate:</span>
+              <span class="font-medium">1%</span>
+            </div>
+          </div>
+        </div>
+        <div class="bg-white dark:bg-gray-800 rounded-lg p-5 border border-gray-200 dark:border-gray-700 shadow-sm">
+          <div class="flex items-center mb-4">
+            <div class="bg-purple-100 dark:bg-purple-900/40 p-2 rounded-lg mr-3">
+              <i class="fas fa-file-invoice text-purple-600 dark:text-purple-300"></i>
+            </div>
+            <h4 class="font-semibold">Claims Adjudication</h4>
+          </div>
+          <p class="text-sm text-gray-600 dark:text-gray-400">
+            Processing pharmacy claims, determining coverage, and calculating patient/plan payment responsibilities.
+          </p>
+          <div class="mt-4 pt-3 border-t border-gray-200 dark:border-gray-700">
+            <div class="flex justify-between items-center">
+              <span class="text-sm text-gray-600 dark:text-gray-400">In-house rate:</span>
+              <span class="font-medium">2%</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Regulatory & Market Impact -->
+    <div class="glass dark:glass rounded-xl p-6 mb-6">
+      <h3 class="text-xl font-semibold mb-6">Regulatory & Market Impact</h3>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="bg-white dark:bg-gray-800 rounded-lg p-5 border border-gray-200 dark:border-gray-700 shadow-sm">
+          <h4 class="font-semibold mb-3 flex items-center">
+            <i class="fas fa-balance-scale text-purple-600 dark:text-purple-300 mr-2"></i> Regulatory Activity
+          </h4>
+          <ul class="space-y-3 text-sm text-gray-600 dark:text-gray-400">
+            <li class="flex items-start"><i class="fas fa-check-circle text-green-500 mt-1 mr-2"></i><span>21 federal bills addressing PBMs introduced in the 118th Congress</span></li>
+            <li class="flex items-start"><i class="fas fa-check-circle text-green-500 mt-1 mr-2"></i><span>33 states and DC enacted legislation referencing PBMs in 2023</span></li>
+            <li class="flex items-start"><i class="fas fa-check-circle text-green-500 mt-1 mr-2"></i><span>FTC investigating rebate schemes and business practices (2022-2024)</span></li>
+            <li class="flex items-start"><i class="fas fa-check-circle text-green-500 mt-1 mr-2"></i><span>Increased focus on transparency in drug pricing and rebates</span></li>
+          </ul>
+        </div>
+        <div class="bg-white dark:bg-gray-800 rounded-lg p-5 border border-gray-200 dark:border-gray-700 shadow-sm">
+          <h4 class="font-semibold mb-3 flex items-center">
+            <i class="fas fa-chart-line text-purple-600 dark:text-purple-300 mr-2"></i> Market Implications
+          </h4>
+          <ul class="space-y-3 text-sm text-gray-600 dark:text-gray-400">
+            <li class="flex items-start"><i class="fas fa-exclamation-circle text-amber-500 mt-1 mr-2"></i><span>Potential input foreclosure: vertically integrated insurers may restrict PBM access to competitors</span></li>
+            <li class="flex items-start"><i class="fas fa-exclamation-circle text-amber-500 mt-1 mr-2"></i><span>Price discrimination: non-affiliated insurers may face higher costs</span></li>
+            <li class="flex items-start"><i class="fas fa-exclamation-circle text-amber-500 mt-1 mr-2"></i><span>Customer foreclosure: PBM competitors may lose access to large insurer customers</span></li>
+            <li class="flex items-start"><i class="fas fa-exclamation-circle text-amber-500 mt-1 mr-2"></i><span>Blue Shield of California announced dropping Caremark in 2023 for alternatives</span></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="border-t border-gray-200 dark:border-gray-800 mt-12 py-8 text-center text-gray-500 dark:text-gray-400 text-sm">
+    <div class="container mx-auto px-4">
+      <p>© 2024 HealthMarket Intelligence. Data sourced from AMA Policy Research Perspectives and other public sources.</p>
+    </div>
+  </footer>
+
+  <script>
+    document.getElementById('toggleDarkMode').addEventListener('click', function() {
+      document.documentElement.classList.toggle('dark');
+      localStorage.setItem('darkMode', document.documentElement.classList.contains('dark'));
+    });
+    if (localStorage.getItem('darkMode') === 'true' || (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches && localStorage.getItem('darkMode') !== 'false')) {
+      document.documentElement.classList.add('dark');
+    }
+
+    function createIntegrationChart(data) {
+      const ctx = document.getElementById('integrationChart').getContext('2d');
+      const chartData = {
+        labels: data.map(row => row['Geographic Market'] || 'N/A'),
+        datasets: [
+          { label: 'Overall', data: data.map(row => row['Vertical Integration Share (%)']), backgroundColor: 'rgba(147, 51, 234, 0.7)', borderColor: 'rgba(147, 51, 234, 1)', borderWidth: 1 },
+          { label: 'Commercial', data: data.map(row => row['Commercial']), backgroundColor: 'rgba(59, 130, 246, 0.7)', borderColor: 'rgba(59, 130, 246, 1)', borderWidth: 1 },
+          { label: 'Medicare Part D', data: data.map(row => row['Part D']), backgroundColor: 'rgba(16, 185, 129, 0.7)', borderColor: 'rgba(16, 185, 129, 1)', borderWidth: 1 }
+        ]
+      };
+      return new Chart(ctx, {
+        type: 'bar',
+        data: chartData,
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { position: 'top', labels: { color: document.documentElement.classList.contains('dark') ? '#e5e7eb' : '#374151' } } },
+          scales: {
+            y: { beginAtZero: true, max: 100, grid: { color: document.documentElement.classList.contains('dark') ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)' }, ticks: { color: document.documentElement.classList.contains('dark') ? '#e5e7eb' : '#374151', callback: value => value + '%' } },
+            x: { grid: { display: false }, ticks: { color: document.documentElement.classList.contains('dark') ? '#e5e7eb' : '#374151' } }
+          }
+        }
+      });
+    }
+
+    async function loadPBMData() {
+      try {
+        const response = await fetch('http://localhost:3000/api/pbm-relationships');
+        const data = await response.json();
+
+        document.getElementById('updateTimestamp').textContent = new Date(data.timestamp).toLocaleString();
+
+        const nationalData = data.verticalIntegration.data.find(row => row['Geographic Market'] === 'National Level');
+        if (nationalData) {
+          document.getElementById('nationalVerticalIntegration').textContent = nationalData['Vertical Integration Share (%)'] + '%';
+          document.getElementById('commercialVerticalIntegration').textContent = nationalData['Commercial'] + '%';
+          document.getElementById('medicareVerticalIntegration').textContent = nationalData['Part D'] + '%';
+        }
+
+        const tableBody = document.getElementById('integrationTableBody');
+        tableBody.innerHTML = '';
+        data.verticalIntegration.data.forEach(row => {
+          tableBody.innerHTML += `
+            <tr class="hover:bg-gray-50 dark:hover:bg-gray-800/50">
+              <td class="px-4 py-3 font-medium">${row['Geographic Market'] || 'N/A'}</td>
+              <td class="px-4 py-3">${row['Vertical Integration Share (%)'] || 'N/A'}%</td>
+              <td class="px-4 py-3">${row['Commercial'] || 'N/A'}%</td>
+              <td class="px-4 py-3">${row['Part D'] || 'N/A'}%</td>
+            </tr>
+          `;
+        });
+
+        const insightsList = document.getElementById('keyInsightsList');
+        insightsList.innerHTML = '';
+        data.keyInsights['PBM-Insurer Relationship Mapping'].forEach(insight => {
+          insightsList.innerHTML += `
+            <li class="flex items-start">
+              <div class="bg-purple-100 dark:bg-purple-900/40 p-2 rounded-lg mr-3 flex-shrink-0">
+                <i class="fas fa-lightbulb text-purple-600 dark:text-purple-300"></i>
+              </div>
+              <p class="text-gray-700 dark:text-gray-300">${insight}</p>
+            </li>
+          `;
+        });
+
+        const relationshipsContainer = document.getElementById('relationshipsContainer');
+        relationshipsContainer.innerHTML = '';
+        data.relationships.forEach(rel => {
+          const integratedClass = rel.verticallyIntegrated ? 'bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-900/30 dark:to-purple-800/30 border-purple-200 dark:border-purple-800' : 'bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900/30 dark:to-gray-800/30 border-gray-200 dark:border-gray-700';
+          const badgeClass = rel.verticallyIntegrated ? 'bg-purple-200 dark:bg-purple-800 text-purple-800 dark:text-purple-200' : 'bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-300';
+          const badgeText = rel.verticallyIntegrated ? 'Vertically Integrated' : 'No Integration';
+          relationshipsContainer.innerHTML += `
+            <div class="${integratedClass} rounded-lg p-5 border card-hover">
+              <div class="flex justify-between items-start">
+                <h4 class="font-semibold text-gray-800 dark:text-white">${rel.insurer}</h4>
+                <span class="text-xs font-medium ${badgeClass} px-2 py-1 rounded-full">${badgeText}</span>
+              </div>
+              <div class="mt-4 space-y-3">
+                <div class="flex items-start"><div class="w-24 text-gray-600 dark:text-gray-400 text-sm">PBM:</div><div class="font-medium">${rel.pbm}</div></div>
+                <div class="flex items-start"><div class="w-24 text-gray-600 dark:text-gray-400 text-sm">Relationship:</div><div class="font-medium">${rel.relationship}</div></div>
+                <div class="flex items-start"><div class="w-24 text-gray-600 dark:text-gray-400 text-sm">Insurer Share:</div><div class="font-medium">${rel.marketShareInsurer}</div></div>
+                <div class="flex items-start"><div class="w-24 text-gray-600 dark:text-gray-400 text-sm">PBM Share:</div><div class="font-medium">${rel.marketSharePBM}</div></div>
+              </div>
+            </div>
+          `;
+        });
+
+        const chart = createIntegrationChart(data.verticalIntegration.data);
+      } catch (error) {
+        console.error('Error loading PBM relationship data:', error);
+        document.getElementById('updateTimestamp').textContent = 'Error loading data';
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', loadPBMData);
+  </script>
+</body>
+</html>

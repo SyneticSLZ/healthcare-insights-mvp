@@ -1,0 +1,216 @@
+"The Medicare-Medicaid Linked Enrollee Analytic Data Source (MMLEADS) Version 2.0 Public Use File (PUF) contain demographic, enrollment, condition prevalence, utilization, and spending at the state level for calendar years 2006 through 2012.  The variables within each category are listed below.  Note that values (cells) where the count of beneficiaries was < 11 have been suppressed in accordance with CMS regulations (denoted by * in the cell).  If only one cell is suppressed for a measure, the second lowest cell is also suppressed to prevent re-identification.  When a variable is not applicable, this is denoted by a period (.) in the cell to indicate a missing value.
+
+A MMLEADS PUF methodological overview is available.  This document describes the sample and methodology used to calculate all variables in the file.
+
+When calculating the chronic condition and chronic and other potentially disabling condition prevalence for the Full Benefit and Partial Benefit enrollees, all Medicare and Medicaid Fee-for-Service claims are examined.  ",
+,
+,
+2006-2012 MMLEADS PUF Documentation,
+Categories,Variable Names
+Denominators,Number of People
+,Number of People with FFS
+,Number of Females with FFS
+,Number of Males with FFS
+Demographic Characteristics,Percent with all 12 months in FFS Medicaid
+,Percent with all 12 months in FFS Medicare
+,Percent with all 12 months with Medicare Part D coverage
+,Percent under 40 Years
+,Percent between 40-64 Years
+,Percent between 65-84 Years
+,Percent 85+ Years
+,Percent under 65 Years
+,Percent 65+ Years
+,Percent Female
+,Percent Male
+,Percent Non-Hispanic White
+,Percent African American
+,Percent Hispanic
+,Percent Asian or Pacific Islander
+,Percent American Indian or Alaska Native
+,Percent Other or Unknown Race
+Medicare Enrollment Variables,Percent of Medicare beneficiaries with benefits due to Old Age or Survivor's Insurance
+,Percent of Medicare beneficiaries with benefits due to Disability Insurance
+,Percent of Medicare beneficiaries with benefits due to ESRD with or without Disability Insurance
+Medicaid Enrollment Variables,Percent of Medicaid enrollees with MAS - Receiving Cash or Section 1931
+,Percent of Medicaid enrollees with MAS - Medically Needy
+,Percent of Medicaid enrollees with MAS - Poverty Related
+,Percent of Medicaid enrollees with MAS - 1115(a) Demonstration Expansion
+,Percent of Medicaid enrollees with MAS - unclassified or unknown
+,Percent of Medicaid enrollees with BOE - Aged
+,Percent of Medicaid enrollees with BOE - Blind/Disabled
+,Percent of Medicaid enrollees with BOE - Child
+,Percent of Medicaid enrollees with BOE - Adult
+,Percent of Medicaid enrollees with BOE - Breast and Cervical Cancer Prevention Act
+,Percent of Medicaid enrollees with BOE - Other/Unknown
+Chronic Condition Period Prevalence,Percent of FFS people with acquired hypothyroidism
+,Percent of FFS people who have had a heart attack
+,Percent of FFS people with Alzheimer's disease
+,Percent of FFS people with Alzheimer's and related disorders
+,Percent of FFS people with anemia
+,Percent of FFS people with asthma
+,Percent of FFS people with atrial fibrillation
+,Percent of FFS people with cataracts
+,Percent of FFS people with chronic kidney disease
+,Percent of FFS people with chronic obstructive pulmonary disease
+,Percent of FFS people with heart failure
+,Percent of FFS people with diabetes
+,Percent of FFS people with glaucoma
+,Percent of FFS people with a hip fracture
+,Percent of FFS people with high cholesterol
+,Percent of FFS people with hypertension
+,Percent of FFS people with ischemic heart disease
+,Percent of FFS people with osteoporosis
+,Percent of FFS people with arthritis
+,Percent of FFS people with stroke or TIA
+,Percent of FFS females with breast cancer
+,Percent of FFS people with colorectal cancer
+,Percent of FFS females with endometrial cancer
+,Percent of FFS people with lung cancer
+,Percent of FFS males with prostate cancer
+,Percent of FFS males with benign prostatic hyperplasia
+,Percent of FFS people with depression (any instance including bipolar episodes)
+Other Chronic or Potentially Disabling Condition Period Prevalence,Percent of FFS people with Major Depressive Disorders
+,Percent of FFS people with ADHD or other conduct disorders
+,Percent of FFS people with anxiety
+,Percent of FFS people with bipolar disorder
+,Percent of FFS people with personality disorders
+,Percent of FFS people with post-traumatic stress disorder
+,Percent of FFS people with schizophrenia
+,Percent of FFS people with schizophrenia or other psychotic disorders
+,Percent of FFS people with tobacco use disorder
+,Percent of FFS people with autism
+,Percent of FFS people with cerebral palsy
+,Percent of FFS people with cystic fibrosis or other metabolic developmental disorders
+,Percent of FFS people with epilepsy
+,Percent of FFS people with intellectual disabilities
+,Percent of FFS people with learning disabilities
+,Percent of FFS people with mobility impairments
+,Percent of FFS people with multiple sclerosis and transverse myelitis
+,Percent of FFS people with muscular dystrophy
+,Percent of FFS people with deafness or other hearing impairment
+,Percent of FFS people with blindness or other visual impairment
+,Percent of FFS people with spina bifida or other congenital anomalies
+,Percent of FFS people with a history of spinal cord injury
+,Percent of FFS people with a history of traumatic brain injury
+,Percent of FFS people with alcohol use disorder
+,Percent of FFS people with drug use disorder
+,Percent of FFS people with fibromyalgia or chronic pain
+,Percent of FFS people with hepatitis a
+,Percent of FFS people with hepatitis b (acute or unspecified)
+,Percent of FFS people with hepatitis b (chronic)
+,Percent of FFS people with hepatitis c (acute)
+,Percent of FFS people with hepatitis c (chronic)
+,Percent of FFS people with hepatitis c (unspecified)
+,Percent of FFS people with hepatitis d
+,Percent of FFS people with hepatitis e
+,Percent of FFS people with viral hepatitis (general)
+,Percent of FFS people with HIV/AIDS
+,Percent of FFS people with leukemia or lymphoma
+,"Percent of FFS people with liver disease, cirrhosis, or other liver condition"
+,Percent of FFS people with migraines or other chronic headaches
+,Percent of FFS people with obesity
+,Percent of FFS people with pressure ulcers or chronic ulcers
+,Percent of FFS people with peripheral vascular disease
+,Percent of FFS people with opioid use disorder (general)
+,Percent of FFS people with opioid use diagnosis
+,Percent of FFS people with opioid related hospitalization or ED visit
+,Percent of FFS people with Medication Assisted Therapy
+,Percent of FFS people with sickle cell disease
+Utilization: Medicare and Medicaid Combined,Count of FFS Acute IP Hospital Days - Medicare and Medicaid combined
+,Count of FFS Acute IP Hospital Admissions - Medicare and Medicaid combined
+,Total FFS dollars (Medicare and Medicaid) associated with IP hospital admissions
+,Count of FFS Acute IP Hospital 30-day Readmissions - Medicare and Medicaid combined
+,FFS Readmission Rate (% of admissions that are readmissions)
+,Count of FFS ED Visits - Medicare and Medicaid combined
+,"ED Visits per 1,000 FFS enrollees"
+,Percent of FFS people with at least one Medicare or Medicaid Nursing Facility or non Facility-based Long-term Care Service (claim or assessment)
+,Percent of people with at least one Medicare or Medicaid Residential Mental Health service
+,Percent of people with at least one Medicare or Medicaid Community Mental Health service
+Medicare Service: Utilization,Number of FFS people who used Medicare IP Hospital services
+,Number of FFS people who used Medicare Other IP Hospital services
+,Number of FFS people who used Medicare Other facility-based post-acute care services
+,Number of FFS people who used Medicare SNF services
+,Number of FFS people who used Medicare home health services
+,Number of FFS people who used Medicare hospice services
+,Number of FFS people who used Medicare hospital outpatient services
+,Number of FFS people who used Medicare ESRD facility services
+,Number of FFS people who used Medicare RHC/FQHC clinic services
+,Number of FFS people who used Medicare outpatient therapy services
+,Number of FFS people who used Medicare Community Mental Health Clinic services
+,Number of FFS people who used Medicare ambulatory surgical center services
+,Number of FFS people who used Medicare Part B drugs
+,Number of FFS people who used Medicare physician evaluation & management services
+,Number of FFS people who used Medicare procedures
+,Number of FFS people who used Medicare imaging services
+,Number of FFS people who used Medicare laboratory/testing services
+,Number of FFS people who used Medicare durable medical equipment
+,Number of FFS people who used Medicare Other Part B services
+,Number of people who used Medicare Part D prescription drugs
+,Number of people who were enrolled in Medicare managed care Part A or Part B
+Medicare Service: Payments,Total Medicare payments
+,Total Medicare IP Hospital FFS payments
+,Total Medicare Other IP Hospital FFS payments
+,Total Medicare Other facility-based post-acute care FFS payments
+,Total Medicare SNF FFS payments
+,Total Medicare home health FFS payments
+,Total Medicare hospice FFS payments
+,Total Medicare hospital outpatient FFS payments
+,Total Medicare ESRD facility FFS payments
+,Total Medicare RHC/FQHC clinic FFS payments
+,Total Medicare Outpatient Therapy FFS Payments
+,Total Medicare Community Mental Health Clinic FFS Payments
+,Total Medicare ambulatory surgical center FFS payments
+,Total Medicare Part B drug FFS payments
+,Total Medicare physician evaluation & management FFS payments
+,Total Medicare procedure FFS payments
+,Total Medicare imaging FFS payments
+,Total Medicare laboratory/testing FFS payments
+,Total Medicare durable medical equipment FFS payments
+,Total Medicare Other Part B FFS payments
+,Total Medicare Part D prescription drug FFS costs (total RX cost)
+,Total Part A Medicare Advantage payments
+,Total Part B Medicare Advantage payments
+Medicaid Service: Utilization,Number of people who used Medicaid waiver services (across all types of service)
+,Number of people who used Medicaid non-waiver services (across all types of service)
+,Number of FFS people who used Medicaid IP Hospital services
+,Number of FFS people who used Medicaid mental health services
+,Number of FFS people who used Medicaid intermediate care facility services
+,Number of FFS people who used Medicaid nursing facility services
+,Number of FFS people who used Medicaid home health services
+,Number of FFS people who used Medicaid hospice services
+,Number of FFS people who used Medicaid hospital outpatient services
+,Number of FFS people who used Medicaid physician services
+,Number of FFS people who used Medicaid lab/xray services
+,Number of FFS people who used Medicaid durable medical equipment services
+,Number of FFS people who used Medicaid drugs
+,Number of FFS people who used Medicaid personal care services
+,Number of FFS people who used Medicaid targeted case management services
+,Number of FFS people who used Medicaid clinic services
+,Number of FFS people who used Medicaid dental services
+,Number of FFS people who used Medicaid transportation services
+,Number of FFS people who used Medicaid other services
+,Number of people who used Medicaid managed care services
+Medicaid Service: Payments,Total Medicaid FFS payments
+,Total waiver FFS payments (across all types of service)
+,Total Medicaid non-waiver FFS payments (across all types of service)
+,Total Medicaid IP Hospital FFS payments
+,Total Medicaid mental health FFS payments
+,Total Medicaid intermediate care facility FFS payments
+,Total Medicaid nursing facility FFS payments
+,Total Medicaid home health FFS payments
+,Total Medicaid hospice FFS payments
+,Total Medicaid hospital outpatient FFS payments
+,Total Medicaid physician FFS payments
+,Total Medicaid lab/xray FFS payments
+,Total Medicaid durable medical equipment FFS payments
+,Total Medicaid drug FFS payments
+,Total Medicaid personal care payments
+,Total Medicaid targeted case management payments
+,Total Medicaid clinic payments
+,Total Medicaid dental payments
+,Total Medicaid transportation service payments
+,Total Medicaid other service payments
+,Total Medicaid managed care payments
+Other Medicaid Use Categories,Percent of Medicaid enrollees with Home and Community Based Services waiver payments
+,Percent of Medicaid enrollees without Home and Community Based Services waiver payments
+,Percent with Medicaid non facility-based long term care services (home health or Personal Care Services)

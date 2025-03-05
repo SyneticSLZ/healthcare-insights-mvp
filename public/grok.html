@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Enterprise Market Analysis Dashboard</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body {
+      background-color: #1a202c;
+      color: #e2e8f0;
+      margin: 0;
+      font-family: 'Arial', sans-serif;
+    }
+    .navbar {
+      background-color: #2d3748;
+      padding: 1rem;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      border-bottom: 1px solid #4a5568;
+    }
+    .card {
+      background-color: #2d3748;
+      border: 1px solid #4a5568;
+      border-radius: 0.5rem;
+      padding: 1.5rem;
+    }
+    .chart-container {
+      position: relative;
+      height: 400px;
+      width: 100%;
+      margin-top: 1rem;
+    }
+    .truncate-cell {
+      max-width: 150px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .truncate-cell:hover {
+      overflow: visible;
+      white-space: normal;
+      background: #4a5568;
+      position: relative;
+      z-index: 10;
+    }
+    .content {
+      padding: 2rem;
+      min-height: calc(100vh - 4rem - 1px); /* Adjust for navbar and padding */
+    }
+    .hidden {
+      display: none;
+    }
+  </style>
+</head>
+<body class="font-sans antialiased">
+  <!-- Navbar -->
+  <nav class="navbar flex justify-around items-center">
+    <a href="#regulatory" class="text-indigo-300 hover:text-white font-semibold px-4 py-2 rounded transition">Regulatory & Filings</a>
+    <a href="#pbm-relationship" class="text-indigo-300 hover:text-white font-semibold px-4 py-2 rounded transition">PBM Relationships</a>
+    <a href="#market-share" class="text-indigo-300 hover:text-white font-semibold px-4 py-2 rounded transition">Market Share</a>
+  </nav>
+
+  <!-- Loading Indicator -->
+  <div id="loading" class="fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center z-20 hidden">
+    <svg class="animate-spin h-12 w-12 text-indigo-300" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+      <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+      <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8h8a8 8 0 01-8 8 8 8 0 01-8-8z"></path>
+    </svg>
+    <p class="mt-2 text-indigo-300">Loading data...</p>
+  </div>
+
+  <!-- Error Display -->
+  <div id="error" class="fixed top-20 left-1/2 transform -translate-x-1/2 bg-red-900 border-l-4 border-red-500 text-red-100 p-4 rounded-lg shadow-md hidden">
+    <p class="font-semibold">Error</p>
+    <p id="error-message" class="text-sm"></p>
+  </div>
+
+  <!-- Content Sections -->
+  <div class="content">
+    <!-- Regulatory & Financial Filings Tracking -->
+    <section id="regulatory" class="card">
+      <h2 class="text-3xl font-bold text-indigo-200 mb-6">Regulatory & Financial Filings Tracking</h2>
+      <p class="text-gray-300 mb-4">Monitor insurance company filings (SEC, state insurance commissions) to identify long-term strategies, acquisitions, and compliance trends.</p>
+      <div id="regulatory-overview" class="text-gray-300 mb-4"></div>
+      <div id="regulatory-metrics" class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6"></div>
+      <div class="chart-container">
+        <canvas id="regulatoryChart"></canvas>
+      </div>
+    </section>
+
+    <!-- PBM-Insurer Relationship Mapping -->
+    <section id="pbm-relationship" class="card hidden">
+      <h2 class="text-3xl font-bold text-indigo-200 mb-6">PBM-Insurer Relationship Mapping</h2>
+      <p class="text-gray-300 mb-4">Track which PBMs are working with specific insurers, including contract details, partnership durations, and service offerings.</p>
+      <div id="pbm-relationship-overview" class="text-gray-300 mb-4"></div>
+      <div id="pbm-relationship-metrics" class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6"></div>
+      <div class="chart-container">
+        <canvas id="pbmRelationshipChart"></canvas>
+      </div>
+      <div id="pbm-infographic" class="mt-4"></div>
+    </section>
+
+    <!-- Market Share & Competitive Landscape Analysis -->
+    <section id="market-share" class="card hidden">
+      <h2 class="text-3xl font-bold text-indigo-200 mb-6">Market Share & Competitive Landscape Analysis</h2>
+      <p class="text-gray-300 mb-4">Provide insights into market share data for insurers and PBMs, highlighting shifts, consolidations, and emerging competitors.</p>
+      <div id="market-share-overview" class="text-gray-300 mb-4"></div>
+      <div id="market-share-metrics" class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6"></div>
+      <div class="chart-container">
+        <canvas id="marketShareChart"></canvas>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    const BASE_URL = 'http://localhost:3000/api';
+    const loading = document.getElementById('loading');
+    const errorDiv = document.getElementById('error');
+    const errorMessage = document.getElementById('error-message');
+    const regulatorySection = document.getElementById('regulatory');
+    const pbmRelationshipSection = document.getElementById('pbm-relationship');
+    const marketShareSection = document.getElementById('market-share');
+    const regulatoryOverview = document.getElementById('regulatory-overview');
+    const regulatoryMetrics = document.getElementById('regulatory-metrics');
+    const pbmRelationshipOverview = document.getElementById('pbm-relationship-overview');
+    const pbmRelationshipMetrics = document.getElementById('pbm-relationship-metrics');
+    const marketShareOverview = document.getElementById('market-share-overview');
+    const marketShareMetrics = document.getElementById('market-share-metrics');
+    const pbmInfographic = document.getElementById('pbm-infographic');
+    let regulatoryChart, pbmRelationshipChart, marketShareChart;
+
+    // Initialize Charts
+    function initCharts() {
+      const ctxRegulatory = document.getElementById('regulatoryChart').getContext('2d');
+      regulatoryChart = new Chart(ctxRegulatory, {
+        type: 'bar',
+        data: { labels: [], datasets: [] },
+        options: { scales: { y: { beginAtZero: true } }, plugins: { legend: { labels: { color: '#e2e8f0' } } } }
+      });
+
+      const ctxPBM = document.getElementById('pbmRelationshipChart').getContext('2d');
+      pbmRelationshipChart = new Chart(ctxPBM, {
+        type: 'pie',
+        data: { labels: [], datasets: [{ data: [], backgroundColor: ['#60a5fa', '#f472b6', '#34d399'] }] },
+        options: { plugins: { legend: { labels: { color: '#e2e8f0' } } } }
+      });
+
+      const ctxMarket = document.getElementById('marketShareChart').getContext('2d');
+      marketShareChart = new Chart(ctxMarket, {
+        type: 'line',
+        data: { labels: [], datasets: [] },
+        options: { scales: { y: { beginAtZero: true } }, plugins: { legend: { labels: { color: '#e2e8f0' } } } }
+      });
+    }
+
+    // Fetch All Data
+    async function fetchAllData() {
+      const endpoints = ['naic-financials', 'ama-pbm', 'nhe', 'mcbs', 'mmleads', 'sec-edgar', 'marketplace-puf'];
+      const data = {};
+      loading.classList.remove('hidden');
+
+      try {
+        for (const endpoint of endpoints) {
+          const response = await fetch(`${BASE_URL}/${endpoint}`);
+          if (!response.ok) throw new Error(`HTTP error for ${endpoint}! Status: ${response.status}`);
+          data[endpoint] = await response.json();
+        }
+        displayData(data);
+      } catch (error) {
+        showError(`Failed to fetch data: ${error.message}`);
+      } finally {
+        loading.classList.add('hidden');
+      }
+    }
+
+    function showError(message) {
+      errorDiv.classList.remove('hidden');
+      errorMessage.textContent = message;
+    }
+
+    function updateCharts(data) {
+      // Regulatory Chart (Bar: Legislative Actions from AMA)
+      const amaData = data['ama-pbm']?.summarizedData?.tables?.['Table 1. Largest prescription drug plan insurers\' market shares at the U.S. national level, 2022']?.data || [];
+      regulatoryChart.data.labels = ['Federal Bills', 'State Laws'];
+      regulatoryChart.data.datasets = [{
+        label: '2023 Count',
+        data: [21, 33], // From AMA insights
+        backgroundColor: '#60a5fa'
+      }];
+      regulatoryChart.update();
+
+      // PBM Relationship Chart (Pie: Vertical Integration from AMA Table 5)
+      const pbmData = data['ama-pbm']?.summarizedData?.tables?.['Table 5. The extent of vertical integration between insurers and PBMs, 2022']?.data || [];
+      const integrationData = pbmData.map(row => parseFloat(row['Vertical Integration Share (%)']) || 0).slice(0, 3);
+      pbmRelationshipChart.data.labels = ['Combined', 'Commercial', 'Medicare Part D'];
+      pbmRelationshipChart.data.datasets[0].data = integrationData;
+      pbmRelationshipChart.update();
+
+      // Market Share Chart (Line: Top Insurers from AMA Table 1)
+      const marketData = data['ama-pbm']?.summarizedData?.tables?.['Table 1. Largest prescription drug plan insurers\' market shares at the U.S. national level, 2022']?.data || [];
+      const insurerShares = marketData.map(row => ({ label: row.Insurer, data: parseFloat(row['Market Share (%)']) || 0 })).slice(0, 5);
+      marketShareChart.data.labels = ['2022'];
+      marketShareChart.data.datasets = insurerShares.map((ins, i) => ({
+        label: ins.label,
+        data: [ins.data],
+        borderColor: `hsl(${i * 60}, 70%, 50%)`,
+        fill: false
+      }));
+      marketShareChart.update();
+    }
+
+    function displayInfographic(data) {
+      const amaPbmData = data['ama-pbm']?.summarizedData?.tables?.['Table 2. Largest pharmacy benefit managers\' market shares at the U.S. national level, 2022']?.data || [];
+      const pbmPairs = amaPbmData.map(row => `${row.PBM} (${row['Rebate Negotiation Share (%)']}% with ${row.PBM.split('(')[1]?.replace(')', '') || 'N/A'})`).slice(0, 3);
+      const naicHealthData = data['naic-financials']?.summarizedData?.['Health Entities']?.summary || {};
+      pbmInfographic.innerHTML = `
+        <div class="text-sm text-gray-300">
+          <h3 class="font-medium">PBM-Insurer Relationships</h3>
+          <p>Vertical Integration: ${data['ama-pbm']?.summarizedData?.tables?.['Table 5. The extent of vertical integration between insurers and PBMs, 2022']?.data?.[0]?.['Vertical Integration Share (%)'] || 'N/A'}% (National)</p>
+          <p>Key Relationships: ${pbmPairs.join(', ')}</p>
+          <p>NAIC Health Premium: ${naicHealthData['Direct Written Premium'] || 'N/A'}</p>
+          <p>NHE Drug Spending: ${data['nhe']?.summarizedData?.['Table 16: Retail Prescription Drugs Expenditures']?.data?.[0]?.['Spending'] || 'N/A'} (Latest)</p>
+        </div>
+      `;
+    }
+
+    function displayData(data) {
+      if (!data || Object.keys(data).length === 0) {
+        showError('No data returned from the server.');
+        return;
+      }
+
+      // Regulatory & Financial Filings Tracking
+      regulatoryOverview.textContent = 'Overview: Tracking filings from SEC, NAIC, and regulatory actions from AMA.';
+      regulatoryMetrics.innerHTML = `
+        <div><strong>SEC Metric:</strong> ${data['sec-edgar']?.items?.[0]?.value || 'N/A'} (Latest)</div>
+        <div><strong>NAIC Net Income:</strong> ${data['naic-financials']?.summarizedData?.['Property & Casualty']?.summary?.['Net Income'] || 'N/A'}</div>
+        <div><strong>AMA Legislation:</strong> ${data['ama-pbm']?.summarizedData?.keyInsights?.['Regulatory & Financial Filings Tracking']?.join(', ') || 'N/A'}</div>
+      `;
+      regulatorySection.classList.remove('hidden');
+
+      // PBM-Insurer Relationship Mapping
+      pbmRelationshipOverview.textContent = 'Overview: Mapping PBM-insurer relationships with vertical integration and spending data.';
+      pbmRelationshipMetrics.innerHTML = `
+        <div><strong>Vertical Integration:</strong> ${data['ama-pbm']?.summarizedData?.tables?.['Table 5. The extent of vertical integration between insurers and PBMs, 2022']?.data?.[0]?.['Vertical Integration Share (%)'] || 'N/A'}% (National)</div>
+        <div><strong>NHE Drug Spending:</strong> ${data['nhe']?.summarizedData?.['Table 16: Retail Prescription Drugs Expenditures']?.data?.[0]?.['Spending'] || 'N/A'}</div>
+      `;
+      displayInfographic(data);
+      pbmRelationshipSection.classList.remove('hidden');
+
+      // Market Share & Competitive Landscape Analysis
+      marketShareOverview.textContent = 'Overview: Analyzing market shares and competitive dynamics from AMA, NAIC, and Marketplace PUF.';
+      marketShareMetrics.innerHTML = `
+        <div><strong>Top Insurer:</strong> ${data['ama-pbm']?.summarizedData?.tables?.['Table 1. Largest prescription drug plan insurers\' market shares at the U.S. national level, 2022']?.data?.[0]?.Insurer} (${data['ama-pbm']?.summarizedData?.tables?.['Table 1. Largest prescription drug plan insurers\' market shares at the U.S. national level, 2022']?.data?.[0]['Market Share (%)']}%)</div>
+        <div><strong>NAIC Health Premium:</strong> ${data['naic-financials']?.summarizedData?.['Health Entities']?.summary?.['Direct Written Premium'] || 'N/A'}</div>
+        <div><strong>Marketplace Issuer:</strong> ${data['marketplace-puf']?.['2024 OEP State-Level Public Use File']?.data?.[0]?.['IssuerId'] || 'N/A'}</div>
+      `;
+      marketShareSection.classList.remove('hidden');
+
+      updateCharts(data);
+    }
+
+    // Handle Navbar Navigation
+    document.querySelectorAll('nav a').forEach(link => {
+      link.addEventListener('click', (e) => {
+        e.preventDefault();
+        document.querySelectorAll('section').forEach(section => section.classList.add('hidden'));
+        document.getElementById(link.getAttribute('href').substring(1)).classList.remove('hidden');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      });
+    });
+
+    // Load Data on Page Load
+    document.addEventListener('DOMContentLoaded', () => {
+      initCharts();
+      fetchAllData();
+      // Default to Regulatory page
+      regulatorySection.classList.remove('hidden');
+    });
+  </script>
+</body>
+</html>

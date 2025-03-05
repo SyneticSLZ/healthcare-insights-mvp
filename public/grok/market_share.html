@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Market Share & Competitive Analysis</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            primary: { 50: '#e6f1fe', 100: '#cce3fd', 500: '#3b82f6', 600: '#2563eb', 700: '#1d4ed8', 800: '#1e40af', 900: '#1e3a8a' },
+            secondary: { 100: '#d1fae5', 500: '#10b981', 700: '#047857' },
+            accent: { 100: '#ede9fe', 500: '#8b5cf6', 700: '#6d28d9', 900: '#4c1d95' },
+            dark: { 800: '#1e293b', 900: '#0f172a' }
+          },
+          animation: { 'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite' }
+        }
+      }
+    }
+  </script>
+  <style type="text/tailwindcss">
+    @layer utilities {
+      .glass { @apply bg-white/10 backdrop-blur-md border border-white/20 shadow-xl; }
+      .glass-light { @apply bg-white/80 backdrop-blur-md border border-gray-200 shadow-xl; }
+      .card-hover { @apply transition-all duration-300 hover:shadow-lg hover:-translate-y-1; }
+    }
+  </style>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="min-h-screen bg-gradient-to-br from-slate-50 to-slate-200 dark:from-dark-900 dark:to-dark-800 text-gray-800 dark:text-gray-100">
+  <div class="absolute top-0 left-0 w-full h-32 bg-accent-700 dark:bg-accent-900 transform -skew-y-2 origin-top-left -translate-y-10 z-0"></div>
+
+  <header class="relative z-10 pt-6">
+    <nav class="container mx-auto px-4 py-4 flex justify-between items-center">
+      <div class="flex items-center space-x-2">
+        <div class="bg-white dark:bg-accent-700 p-2 rounded-lg shadow-md">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-accent-700 dark:text-white" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M5 3a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2V5a2 2 0 00-2-2H5zm9 4a1 1 0 10-2 0v6a1 1 0 102 0V7zm-3 2a1 1 0 10-2 0v4a1 1 0 102 0V9zm-3 3a1 1 0 10-2 0v1a1 1 0 102 0v-1z" clip-rule="evenodd" />
+          </svg>
+        </div>
+        <h1 class="text-2xl font-bold">HealthMarket Intelligence</h1>
+      </div>
+      <div class="flex items-center space-x-4">
+        <a href="index.html" class="text-gray-600 dark:text-gray-300 hover:text-accent-700 dark:hover:text-accent-300 transition-colors px-1">Regulatory Tracking</a>
+        <a href="pbm_relationships.html" class="text-gray-600 dark:text-gray-300 hover:text-accent-700 dark:hover:text-accent-300 transition-colors px-1">PBM Relationships</a>
+        <a href="market_share.html" class="font-semibold text-accent-700 dark:text-accent-100 border-b-2 border-accent-600 dark:border-accent-500 px-1">Market Analysis</a>
+        <button id="toggleDarkMode" class="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">
+          <i class="fas fa-moon dark:hidden"></i>
+          <i class="fas fa-sun hidden dark:block"></i>
+        </button>
+      </div>
+    </nav>
+  </header>
+  
+  <main class="container mx-auto px-4 py-8 relative z-10">
+    <div class="flex justify-between items-center mb-8">
+      <h2 class="text-3xl font-bold text-gray-800 dark:text-white">Market Share & Competitive Analysis</h2>
+      <div class="flex items-center space-x-2 text-sm">
+        <span class="text-gray-500 dark:text-gray-400">Last updated:</span>
+        <span id="updateTimestamp" class="font-medium">Loading...</span>
+      </div>
+    </div>
+    
+    <!-- Overview Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+      <div class="glass dark:glass p-6 rounded-xl card-hover">
+        <div class="flex items-start justify-between">
+          <div>
+            <p class="text-gray-500 dark:text-gray-400 text-sm font-medium">Market Concentration</p>
+            <h3 id="marketConcentration" class="text-3xl font-bold mt-1">Loading...</h3>
+          </div>
+          <div class="bg-accent-100 dark:bg-accent-900/60 p-3 rounded-lg">
+            <i class="fas fa-chart-pie text-accent-700 dark:text-accent-300"></i>
+          </div>
+        </div>
+        <div class="mt-3 text-sm text-gray-600 dark:text-gray-400">
+          <span>Four-firm concentration ratio (CR4)</span>
+        </div>
+      </div>
+      
+      <div class="glass dark:glass p-6 rounded-xl card-hover">
+        <div class="flex items-start justify-between">
+          <div>
+            <p class="text-gray-500 dark:text-gray-400 text-sm font-medium">Highly Concentrated Markets</p>
+            <h3 id="highlyConcentratedMarkets" class="text-3xl font-bold mt-1">Loading...</h3>
+          </div>
+          <div class="bg-red-100 dark:bg-red-900/60 p-3 rounded-lg">
+            <i class="fas fa-exclamation-triangle text-red-600 dark:text-red-300"></i>
+          </div>
+        </div>
+        <div class="mt-3 text-sm text-gray-600 dark:text-gray-400">
+          <span>PDP regions with HHI > 1,800</span>
+        </div>
+      </div>
+      
+      <div class="glass dark:glass p-6 rounded-xl card-hover">
+        <div class="flex items-start justify-between">
+          <div>
+            <p class="text-gray-500 dark:text-gray-400 text-sm font-medium">Average Local HHI</p>
+            <h3 id="averageHHI" class="text-3xl font-bold mt-1">Loading...</h3>
+          </div>
+          <div class="bg-amber-100 dark:bg-amber-900/60 p-3 rounded-lg">
+            <i class="fas fa-balance-scale-right text-amber-600 dark:text-amber-300"></i>
+          </div>
+        </div>
+        <div class="mt-3 text-sm text-gray-600 dark:text-gray-400">
+          <span>Rebate negotiation markets</span>
+        </div>
+      </div>
+    </div>
+    
+    <!-- PBM Market Share Charts -->
+    <div class="glass dark:glass rounded-xl p-6 mb-10">
+      <h3 class="text-xl font-semibold mb-6">PBM Market Share Analysis</h3>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div>
+          <h4 class="font-medium text-gray-800 dark:text-gray-200 mb-4">Rebate Negotiation</h4>
+          <div class="h-80">
+            <canvas id="rebateNegotiationChart"></canvas>
+          </div>
+        </div>
+        <div>
+          <h4 class="font-medium text-gray-800 dark:text-gray-200 mb-4">Retail Network Management</h4>
+          <div class="h-80">
+            <canvas id="retailNetworkChart"></canvas>
+          </div>
+        </div>
+        <div>
+          <h4 class="font-medium text-gray-800 dark:text-gray-200 mb-4">Claims Adjudication</h4>
+          <div class="h-80">
+            <canvas id="claimsAdjudicationChart"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Insurer Market Share Tables -->
+    <div class="glass dark:glass rounded-xl p-6 mb-10">
+      <h3 class="text-xl font-semibold mb-6">Insurer Market Share by Segment</h3>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="bg-white dark:bg-gray-800 rounded-lg overflow-hidden border border-gray-200 dark:border-gray-700">
+          <div class="bg-gradient-to-r from-blue-500 to-blue-600 p-4">
+            <h4 class="font-semibold text-white">Commercial Market</h4>
+          </div>
+          <div class="p-4">
+            <table class="w-full">
+              <thead class="text-xs text-gray-700 dark:text-gray-300 uppercase">
+                <tr>
+                  <th class="py-2 text-left">Insurer</th>
+                  <th class="py-2 text-right">Market Share</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-gray-200 dark:divide-gray-700" id="commercial-tbody">
+                <tr><td colspan="2" class="py-2 text-center">Loading...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="bg-white dark:bg-gray-800 rounded-lg overflow-hidden border border-gray-200 dark:border-gray-700">
+          <div class="bg-gradient-to-r from-green-500 to-green-600 p-4">
+            <h4 class="font-semibold text-white">Medicare Advantage PDP</h4>
+          </div>
+          <div class="p-4">
+            <table class="w-full">
+              <thead class="text-xs text-gray-700 dark:text-gray-300 uppercase">
+                <tr>
+                  <th class="py-2 text-left">Insurer</th>
+                  <th class="py-2 text-right">Market Share</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-gray-200 dark:divide-gray-700" id="medicare-advantage-tbody">
+                <tr><td colspan="2" class="py-2 text-center">Loading...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="bg-white dark:bg-gray-800 rounded-lg overflow-hidden border border-gray-200 dark:border-gray-700">
+          <div class="bg-gradient-to-r from-accent-500 to-accent-600 p-4">
+            <h4 class="font-semibold text-white">Standalone PDP</h4>
+          </div>
+          <div class="p-4">
+            <table class="w-full">
+              <thead class="text-xs text-gray-700 dark:text-gray-300 uppercase">
+                <tr>
+                  <th class="py-2 text-left">Insurer</th>
+                  <th class="py-2 text-right">Market Share</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-gray-200 dark:divide-gray-700" id="standalone-tbody">
+                <tr><td colspan="2" class="py-2 text-center">Loading...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Market Concentration -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+      <div class="glass dark:glass p-6 rounded-xl col-span-2">
+        <h3 class="text-xl font-semibold mb-4">Geographic Market Concentration</h3>
+        <div class="h-80 bg-gradient-to-br from-white to-gray-100 dark:from-gray-800 dark:to-gray-900 rounded-lg flex items-center justify-center">
+          <div class="text-center">
+            <i class="fas fa-map-marked-alt text-accent-400 dark:text-accent-500 text-5xl mb-4"></i>
+            <p class="text-gray-500 dark:text-gray-400">Interactive map coming soon</p>
+            <p class="mt-2 text-sm text-gray-500 dark:text-gray-400" id="hhi-map-text">Loading...</p>
+          </div>
+        </div>
+      </div>
+      <div class="glass dark:glass p-6 rounded-xl">
+        <h3 class="text-xl font-semibold mb-4">HHI by Region Type</h3>
+        <div class="space-y-5" id="hhi-metrics">
+          <div>
+            <div class="flex justify-between mb-1">
+              <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Rebate Negotiation</span>
+              <span class="text-sm font-medium text-gray-700 dark:text-gray-300" id="hhi-rebate">Loading...</span>
+            </div>
+            <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+              <div class="bg-red-500 h-2 rounded-full" id="hhi-rebate-bar" style="width: 0%"></div>
+            </div>
+            <div class="mt-1 text-xs text-gray-500 dark:text-gray-400 text-right" id="hhi-rebate-label">Loading...</div>
+          </div>
+          <!-- Similar blocks for Retail Network and Claims Adjudication added dynamically -->
+        </div>
+        <div class="pt-4 mt-4 border-t border-gray-200 dark:border-gray-700">
+          <div class="flex items-center justify-between">
+            <span class="text-sm text-gray-500 dark:text-gray-400">DOJ/FTC HHI Thresholds:</span>
+          </div>
+          <div class="flex items-center mt-2 text-xs">
+            <div class="w-3 h-3 bg-green-500 rounded-full mr-1"></div><span class="text-gray-700 dark:text-gray-300 mr-3">Unconcentrated: < 1,500</span>
+            <div class="w-3 h-3 bg-amber-500 rounded-full mr-1"></div><span class="text-gray-700 dark:text-gray-300 mr-3">Moderately: 1,500 - 2,500</span>
+            <div class="w-3 h-3 bg-red-500 rounded-full mr-1"></div><span class="text-gray-700 dark:text-gray-300">Highly: > 2,500</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Emerging Trends & Competitive Intelligence -->
+    <div class="glass dark:glass rounded-xl p-6">
+      <h3 class="text-xl font-semibold mb-6">Emerging Trends & Competitive Intelligence</h3>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="bg-white dark:bg-gray-800 rounded-lg p-5 border border-gray-200 dark:border-gray-700">
+          <h4 class="font-medium mb-4 flex items-center">
+            <i class="fas fa-rocket text-accent-600 dark:text-accent-400 mr-2"></i> Market Dynamics
+          </h4>
+          <div id="marketDynamicsInsights" class="space-y-3"></div>
+        </div>
+        <div class="bg-white dark:bg-gray-800 rounded-lg p-5 border border-gray-200 dark:border-gray-700">
+          <h4 class="font-medium mb-4 flex items-center">
+            <i class="fas fa-chess-pawn text-accent-600 dark:text-accent-400 mr-2"></i> Strategic Movements
+          </h4>
+          <div id="strategicMovementsInsights" class="space-y-3"></div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    const darkModeToggle = document.getElementById('toggleDarkMode');
+    darkModeToggle.addEventListener('click', () => document.documentElement.classList.toggle('dark'));
+
+    async function fetchMarketShareData() {
+      try {
+        const response = await fetch('http://localhost:3000/api/market-shares');
+        const data = await response.json();
+
+        // Update overview cards
+        document.getElementById('marketConcentration').textContent = `${data.marketConcentration.national.cr4}%`;
+        document.getElementById('highlyConcentratedMarkets').textContent = `${data.marketConcentration.local.highlyConcentratedMarkets}%`;
+        document.getElementById('averageHHI').textContent = data.marketConcentration.local.averageHHI;
+        document.getElementById('updateTimestamp').textContent = new Date(data.timestamp).toLocaleString();
+
+        // Render PBM charts
+        renderChart('rebateNegotiationChart', data.pbms.rebateNegotiation, 'Rebate Negotiation Market Share');
+        renderChart('retailNetworkChart', data.pbms.retailNetworkManagement, 'Retail Network Management Share');
+        renderChart('claimsAdjudicationChart', data.pbms.claimsAdjudication, 'Claims Adjudication Share');
+
+        // Populate insurer tables
+        populateTable('commercial-tbody', data.insurers.commercial);
+        populateTable('medicare-advantage-tbody', data.insurers.medicareAdvantage);
+        populateTable('standalone-tbody', data.insurers.standalone);
+
+        // Update HHI metrics
+        const hhiMetrics = document.getElementById('hhi-metrics');
+        hhiMetrics.innerHTML = '';
+        const hhiData = {
+          'Rebate Negotiation': data.marketConcentration.local.averageHHI,
+          'Retail Network Management': 2451, // Placeholder, adjust if real data available
+          'Claims Adjudication': 2414 // Placeholder, adjust if real data available
+        };
+        Object.entries(hhiData).forEach(([key, value]) => {
+          const width = Math.min((value / 2500) * 100, 100);
+          const label = value > 2500 ? 'Highly Concentrated' : value > 1500 ? 'Moderately Concentrated' : 'Unconcentrated';
+          hhiMetrics.innerHTML += `
+            <div>
+              <div class="flex justify-between mb-1">
+                <span class="text-sm font-medium text-gray-700 dark:text-gray-300">${key}</span>
+                <span class="text-sm font-medium text-gray-700 dark:text-gray-300">${value}</span>
+              </div>
+              <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+                <div class="bg-${value > 2500 ? 'red' : value > 1500 ? 'amber' : 'green'}-500 h-2 rounded-full" style="width: ${width}%"></div>
+              </div>
+              <div class="mt-1 text-xs text-gray-500 dark:text-gray-400 text-right">${label}</div>
+            </div>
+          `;
+        });
+        document.getElementById('hhi-map-text').textContent = `${data.marketConcentration.local.highlyConcentratedMarkets}% of PDP regions have HHI > 1,800`;
+
+        // Populate insights
+        const marketDynamicsEl = document.getElementById('marketDynamicsInsights');
+        const strategicMovementsEl = document.getElementById('strategicMovementsInsights');
+        data.keyInsights['Market Share & Competitive Landscape Analysis'].forEach(insight => {
+          const div = document.createElement('div');
+          div.className = 'flex items-start';
+          div.innerHTML = `
+            <div class="bg-accent-100 dark:bg-accent-900/40 text-accent-700 dark:text-accent-300 p-1 rounded-full mr-2 mt-0.5">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+              </svg>
+            </div>
+            <span class="text-sm text-gray-700 dark:text-gray-300">${insight}</span>
+          `;
+          marketDynamicsEl.appendChild(div);
+        });
+        const strategicMovements = [
+          'Continued vertical integration between insurers and PBMs.',
+          'Increasing regulatory scrutiny on market concentration.',
+          'Growing trend of mergers and acquisitions in the healthcare sector.'
+        ];
+        strategicMovements.forEach(movement => {
+          const div = document.createElement('div');
+          div.className = 'flex items-start';
+          div.innerHTML = `
+            <div class="bg-accent-100 dark:bg-accent-900/40 text-accent-700 dark:text-accent-300 p-1 rounded-full mr-2 mt-0.5">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+              </svg>
+            </div>
+            <span class="text-sm text-gray-700 dark:text-gray-300">${movement}</span>
+          `;
+          strategicMovementsEl.appendChild(div);
+        });
+      } catch (error) {
+        console.error('Error fetching market share data:', error);
+      }
+    }
+
+    function renderChart(canvasId, data, label) {
+      const ctx = document.getElementById(canvasId).getContext('2d');
+      new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: data.map(item => item.pbm),
+          datasets: [{
+            label: label,
+            data: data.map(item => item.marketShare),
+            backgroundColor: ['rgba(54, 162, 235, 0.6)', 'rgba(255, 99, 132, 0.6)', 'rgba(75, 192, 192, 0.6)', 'rgba(255, 206, 86, 0.6)', 'rgba(153, 102, 255, 0.6)'],
+            borderColor: ['rgba(54, 162, 235, 1)', 'rgba(255, 99, 132, 1)', 'rgba(75, 192, 192, 1)', 'rgba(255, 206, 86, 1)', 'rgba(153, 102, 255, 1)'],
+            borderWidth: 1
+          }]
+        },
+        options: {
+          responsive: true,
+          scales: {
+            y: {
+              beginAtZero: true,
+              title: { display: true, text: 'Market Share (%)' }
+            }
+          }
+        }
+      });
+    }
+
+    function populateTable(tbodyId, data) {
+      const tbody = document.getElementById(tbodyId);
+      tbody.innerHTML = '';
+      data.slice(0, 5).forEach(item => {
+        tbody.innerHTML += `
+          <tr class="hover:bg-gray-50 dark:hover:bg-gray-750">
+            <td class="py-2 font-medium">${item.insurer}</td>
+            <td class="py-2 text-right">${item.marketShare}%</td>
+          </tr>
+        `;
+      });
+    }
+
+    fetchMarketShareData();
+  </script>
+</body>
+</html>

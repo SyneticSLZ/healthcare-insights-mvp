@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Insurance Tracker Dashboard</title>
+  <link href="/styles.css" rel="stylesheet">
+</head>
+<body class="bg-gray-50 font-sans antialiased">
+  <div class="container mx-auto p-6 max-w-7xl">
+    <header class="mb-8 text-center">
+      <h1 class="text-4xl font-extrabold text-gray-800">Insurance & PBM Insights Dashboard</h1>
+      <p class="text-gray-600 mt-2">Real-time data as of March 4, 2025</p>
+    </header>
+
+    <!-- Filters -->
+    <div class="mb-6 flex justify-between items-center">
+      <div>
+        <label class="mr-2">SEC Page:</label>
+        <input type="number" id="secPage" min="1" value="1" class="border p-1 rounded">
+        <label class="ml-4 mr-2">FDA Page:</label>
+        <input type="number" id="fdaPage" min="1" value="1" class="border p-1 rounded">
+        <button id="fetchData" class="ml-4 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Fetch Data</button>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <!-- SEC Data -->
+      <div class="bg-white p-6 rounded-lg shadow-lg">
+        <h2 class="text-2xl font-semibold text-gray-700 mb-4">SEC Filings</h2>
+        <table class="w-full text-gray-600 text-sm">
+          <thead>
+            <tr class="bg-gray-100">
+              <th class="p-2">Metric</th>
+              <th class="p-2">Value</th>
+              <th class="p-2">Unit</th>
+            </tr>
+          </thead>
+          <tbody id="sec-table"></tbody>
+        </table>
+        <p class="mt-2 text-gray-500">Total Metrics: <span id="sec-total">0</span></p>
+      </div>
+
+      <!-- CMS Data -->
+      <div class="bg-white p-6 rounded-lg shadow-lg">
+        <h2 class="text-2xl font-semibold text-gray-700 mb-4">CMS Data</h2>
+        <div class="space-y-4 text-gray-600">
+          <div>
+            <h3 class="text-lg font-medium">Part D Enrollment</h3>
+            <p><strong>Plan:</strong> <span id="cms-enrollment-plan">Loading...</span></p>
+            <p><strong>Enrollment:</strong> <span id="cms-enrollment-count">Loading...</span></p>
+          </div>
+          <div>
+            <h3 class="text-lg font-medium">Part D Spending</h3>
+            <p><strong>Drug:</strong> <span id="cms-spending-drug">Loading...</span></p>
+            <p><strong>Cost:</strong> <span id="cms-spending-cost">Loading...</span></p>
+          </div>
+        </div>
+      </div>
+
+      <!-- FDA Data -->
+      <div class="bg-white p-6 rounded-lg shadow-lg">
+        <h2 class="text-2xl font-semibold text-gray-700 mb-4">FDA Data</h2>
+        <div class="space-y-4 text-gray-600">
+          <div>
+            <h3 class="text-lg font-medium">Drug Approvals</h3>
+            <table class="w-full text-sm">
+              <thead>
+                <tr class="bg-gray-100">
+                  <th class="p-2">App Number</th>
+                  <th class="p-2">Sponsor</th>
+                  <th class="p-2">Drug</th>
+                  <th class="p-2">Approval Date</th>
+                </tr>
+              </thead>
+              <tbody id="fda-drugs-table"></tbody>
+            </table>
+            <p class="mt-2 text-gray-500">Total: <span id="fda-drugs-total">0</span></p>
+          </div>
+          <div>
+            <h3 class="text-lg font-medium">Recalls</h3>
+            <table class="w-full text-sm">
+              <thead>
+                <tr class="bg-gray-100">
+                  <th class="p-2">Recall Number</th>
+                  <th class="p-2">Firm</th>
+                  <th class="p-2">Reason</th>
+                  <th class="p-2">Date</th>
+                </tr>
+              </thead>
+              <tbody id="fda-recalls-table"></tbody>
+            </table>
+            <p class="mt-2 text-gray-500">Total: <span id="fda-recalls-total">0</span></p>
+          </div>
+          <div>
+            <h3 class="text-lg font-medium">Adverse Events</h3>
+            <table class="w-full text-sm">
+              <thead>
+                <tr class="bg-gray-100">
+                  <th class="p-2">Report Number</th>
+                  <th class="p-2">Company</th>
+                  <th class="p-2">Date</th>
+                  <th class="p-2">Reaction</th>
+                </tr>
+              </thead>
+              <tbody id="fda-events-table"></tbody>
+            </table>
+            <p class="mt-2 text-gray-500">Total: <span id="fda-events-total">0</span></p>
+          </div>
+        </div>
+      </div>
+
+      <!-- NAIC Data -->
+      <div class="bg-white p-6 rounded-lg shadow-lg">
+        <h2 class="text-2xl font-semibold text-gray-700 mb-4">NAIC Market</h2>
+        <div class="space-y-2 text-gray-600">
+          <p><strong>Insurer:</strong> <span id="naic-insurer">Loading...</span></p>
+          <p><strong>Market Share:</strong> <span id="naic-share">Loading...</span></p>
+        </div>
+      </div>
+
+      <!-- HealthData.gov Data -->
+      <div class="bg-white p-6 rounded-lg shadow-lg">
+        <h2 class="text-2xl font-semibold text-gray-700 mb-4">HealthData Spending</h2>
+        <table class="w-full text-gray-600 text-sm">
+          <thead>
+            <tr class="bg-gray-100">
+              <th class="p-2">Drug</th>
+              <th class="p-2">Total Spending</th>
+              <th class="p-2">Units</th>
+              <th class="p-2">Claims</th>
+              <th class="p-2">Avg Spend/Unit</th>
+            </tr>
+          </thead>
+          <tbody id="healthdata-table"></tbody>
+        </table>
+        <p class="mt-2 text-gray-500">Total: <span id="healthdata-total">0</span></p>
+      </div>
+
+      <!-- NCBI Guidance -->
+      <div class="bg-white p-6 rounded-lg shadow-lg">
+        <h2 class="text-2xl font-semibold text-gray-700 mb-4">NCBI Guidance</h2>
+        <p class="text-gray-600"><span id="ncbi-guidance">Loading...</span></p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function fetchData() {
+      const secPage = document.getElementById("secPage").value;
+      const fdaPage = document.getElementById("fdaPage").value;
+      fetch(`/api/data?secPage=${secPage}&fdaPage=${fdaPage}&limit=10`)
+        .then(response => response.json())
+        .then(data => {
+          // SEC Table
+          const secTable = document.getElementById("sec-table");
+          secTable.innerHTML = data.sec.items.map(item => `
+            <tr>
+              <td class="p-2">${item.metric}</td>
+              <td class="p-2">${item.value}</td>
+              <td class="p-2">${item.unit}</td>
+            </tr>
+          `).join('');
+          document.getElementById("sec-total").textContent = data.sec.total;
+
+          // CMS
+          document.getElementById("cms-enrollment-plan").textContent = data.cms.enrollment.plan;
+          document.getElementById("cms-enrollment-count").textContent = data.cms.enrollment.enrollment;
+          document.getElementById("cms-spending-drug").textContent = data.cms.spending.drug;
+          document.getElementById("cms-spending-cost").textContent = data.cms.spending.cost;
+
+          // FDA Tables
+          document.getElementById("fda-drugs-table").innerHTML = data.fda.drugs.map(d => `
+            <tr>
+              <td class="p-2">${d.appNumber}</td>
+              <td class="p-2">${d.sponsor}</td>
+              <td class="p-2">${d.drug}</td>
+              <td class="p-2">${d.approvalDate}</td>
+            </tr>
+          `).join('');
+          document.getElementById("fda-drugs-total").textContent = data.fda.totalDrugs;
+
+          document.getElementById("fda-recalls-table").innerHTML = data.fda.recalls.map(r => `
+            <tr>
+              <td class="p-2">${r.recallNumber}</td>
+              <td class="p-2">${r.firm}</td>
+              <td class="p-2">${r.reason}</td>
+              <td class="p-2">${r.date}</td>
+            </tr>
+          `).join('');
+          document.getElementById("fda-recalls-total").textContent = data.fda.totalRecalls;
+
+          document.getElementById("fda-events-table").innerHTML = data.fda.events.map(e => `
+            <tr>
+              <td class="p-2">${e.reportNumber}</td>
+              <td class="p-2">${e.company}</td>
+              <td class="p-2">${e.date}</td>
+              <td class="p-2">${e.reaction}</td>
+            </tr>
+          `).join('');
+          document.getElementById("fda-events-total").textContent = data.fda.totalEvents;
+
+          // NAIC
+          document.getElementById("naic-insurer").textContent = data.naic.insurer;
+          document.getElementById("naic-share").textContent = data.naic.market_share;
+
+          // HealthData Table
+          document.getElementById("healthdata-table").innerHTML = data.healthdata.spending.map(s => `
+            <tr>
+              <td class="p-2">${s.drug}</td>
+              <td class="p-2">${s.totalSpending}</td>
+              <td class="p-2">${s.units}</td>
+              <td class="p-2">${s.claims}</td>
+              <td class="p-2">${s.avgSpendPerUnit}</td>
+            </tr>
+          `).join('');
+          document.getElementById("healthdata-total").textContent = data.healthdata.total;
+
+          // NCBI
+          document.getElementById("ncbi-guidance").textContent = data.ncbi.guidance;
+        })
+        .catch(error => {
+          console.error("Error fetching data:", error);
+          document.querySelectorAll("span").forEach(span => {
+            span.textContent = "Error loading data";
+            span.classList.add("text-red-500");
+          });
+        });
+    }
+
+    document.getElementById("fetchData").addEventListener("click", fetchData);
+    fetchData(); // Initial fetch
+  </script>
+</body>
+</html>
