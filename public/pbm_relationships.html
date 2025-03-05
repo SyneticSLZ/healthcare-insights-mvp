@@ -615,7 +615,7 @@
     // Load data from API
     async function loadPBMData() {
       try {
-        const response = await fetch('http://localhost:3000/api/pbm-relationships');
+        const response = await fetch('https://healthcare-insights-mvp.onrender.com/api/pbm-relationships');
         const data = await response.json();
         
         // Update timestamp

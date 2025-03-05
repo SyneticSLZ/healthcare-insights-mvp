@@ -484,7 +484,7 @@ function formatCurrency(value) {
 // Load dashboard data
 async function loadDashboardData() {
   try {
-    const response = await fetch('http://localhost:3000/api/regulatory-dashboard');
+    const response = await fetch('https://healthcare-insights-mvp.onrender.com/api/regulatory-dashboard');
     const data = await response.json();
     
     // Update timestamp

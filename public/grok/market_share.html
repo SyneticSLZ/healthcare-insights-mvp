@@ -265,7 +265,7 @@
 
     async function fetchMarketShareData() {
       try {
-        const response = await fetch('http://localhost:3000/api/market-shares');
+        const response = await fetch('https://healthcare-insights-mvp.onrender.com/api/market-shares');
         const data = await response.json();
 
         // Update overview cards

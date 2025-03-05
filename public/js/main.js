@@ -1,6 +1,6 @@
 // Fetch and display alerts
 function fetchAlerts() {
-  fetch('http://localhost:3000/api/alerts')
+  fetch('https://healthcare-insights-mvp.onrender.com/api/alerts')
     .then(response => response.json())
     .then(alerts => {
       document.getElementById('alerts-list').innerHTML = alerts.map(a => `
@@ -19,7 +19,7 @@ setInterval(fetchAlerts, 60000);
 document.getElementById('search-btn').addEventListener('click', () => {
   const query = document.getElementById('drug-search').value.trim();
   if (!query) return;
-  fetch(`http://localhost:3000/api/drugs/search?query=${query}`)
+  fetch(`https://healthcare-insights-mvp.onrender.com/api/drugs/search?query=${query}`)
     .then(response => response.json())
     .then(drugs => {
       const table = document.getElementById('search-results');
@@ -38,7 +38,7 @@ document.getElementById('search-btn').addEventListener('click', () => {
 
       document.querySelectorAll('.track-drug').forEach(btn => {
         btn.addEventListener('click', () => {
-          fetch('http://localhost:3000/api/drugs/track', {
+          fetch('https://healthcare-insights-mvp.onrender.com/api/drugs/track', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ name: btn.dataset.name }),
@@ -51,7 +51,7 @@ document.getElementById('search-btn').addEventListener('click', () => {
 
 // Fetch and display tracked drugs
 function fetchTrackedDrugs() {
-  fetch('http://localhost:3000/api/drugs/tracked')
+  fetch('https://healthcare-insights-mvp.onrender.com/api/drugs/tracked')
     .then(response => response.json())
     .then(drugs => {
       document.getElementById('tracked-drugs-table').innerHTML = drugs.map(d => `
@@ -69,7 +69,7 @@ fetchTrackedDrugs();
 
 // Fetch and display competitors
 function fetchCompetitors() {
-  fetch('http://localhost:3000/api/competitors')
+  fetch('https://healthcare-insights-mvp.onrender.com/api/competitors')
     .then(response => response.json())
     .then(competitors => {
       document.getElementById('tracked-insurers-table').innerHTML = competitors.filter(c => c.isTracked).map(c => `
@@ -96,7 +96,7 @@ function fetchCompetitors() {
 
       document.querySelectorAll('.track-insurer').forEach(btn => {
         btn.addEventListener('click', () => {
-          fetch('http://localhost:3000/api/competitors/track', {
+          fetch('https://healthcare-insights-mvp.onrender.com/api/competitors/track', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ name: btn.dataset.name }),
@@ -128,7 +128,7 @@ function fetchCompetitors() {
 fetchCompetitors();
 
 // Fetch and display RFPs
-fetch('http://localhost:3000/api/rfps')
+fetch('https://healthcare-insights-mvp.onrender.com/api/rfps')
   .then(response => response.json())
   .then(rfps => {
     document.getElementById('rfp-table').innerHTML = rfps.map(r => `
@@ -145,7 +145,7 @@ fetch('http://localhost:3000/api/rfps')
   .catch(err => console.error('RFPs Error:', err));
 
 // Fetch and display trends
-fetch('http://localhost:3000/api/trends')
+fetch('https://healthcare-insights-mvp.onrender.com/api/trends')
   .then(response => response.json())
   .then(trends => {
     document.getElementById('trend-table').innerHTML = trends.map(t => `
